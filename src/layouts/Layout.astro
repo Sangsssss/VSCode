@@ -1,0 +1,325 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "Game Developer Portfolio — Crafting worlds, one line at a time.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    <!-- Google Fonts: Press Start 2P (pixel) + Share Tech Mono (body) + Orbitron (display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP CDN -->
+    <script
+      is:inline
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      is:inline
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      is:inline
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"
+    ></script>
+
+    <style>
+      /* ─── CSS Variables ─────────────────────────────── */
+      :root {
+        --bg:           #0a0a0a;
+        --bg-alt:       #0f0f0f;
+        --bg-card:      #111111;
+        --neon:         #00ff00;
+        --neon-dim:     #00cc00;
+        --neon-glow:    rgba(0, 255, 0, 0.35);
+        --neon-subtle:  rgba(0, 255, 0, 0.08);
+        --text:         #e0e0e0;
+        --text-muted:   #666666;
+        --border:       rgba(0, 255, 0, 0.2);
+        --font-pixel:   'Press Start 2P', monospace;
+        --font-mono:    'Share Tech Mono', monospace;
+        --font-display: 'Orbitron', monospace;
+      }
+
+      /* ─── Reset & Base ──────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html { background: var(--bg); color: var(--text); }
+
+      body {
+        font-family: var(--font-mono);
+        background: var(--bg);
+        min-height: 100vh;
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      /* ─── Custom Cursor ─────────────────────────────── */
+      #cursor {
+        position: fixed;
+        top: 0; left: 0;
+        width: 12px; height: 12px;
+        background: var(--neon);
+        box-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon);
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      }
+      #cursor-ring {
+        position: fixed;
+        top: 0; left: 0;
+        width: 36px; height: 36px;
+        border: 1px solid var(--neon);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        opacity: 0.5;
+      }
+
+      /* ─── Scanline Overlay ──────────────────────────── */
+      #scanlines {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9990;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 3px,
+          rgba(0, 0, 0, 0.08) 3px,
+          rgba(0, 0, 0, 0.08) 4px
+        );
+      }
+
+      /* ─── Neon Grid Background ──────────────────────── */
+      #grid-bg {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image:
+          linear-gradient(var(--border) 1px, transparent 1px),
+          linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+        -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+        opacity: 0.6;
+      }
+
+      /* ─── Navigation ────────────────────────────────── */
+      #navbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 2.5rem;
+        background: rgba(10, 10, 10, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-logo {
+        font-family: var(--font-pixel);
+        font-size: 0.6rem;
+        color: var(--neon);
+        text-shadow: 0 0 8px var(--neon);
+        letter-spacing: 0.05em;
+        text-decoration: none;
+      }
+      .nav-logo::before { content: "> "; opacity: 0.6; }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        font-family: var(--font-display);
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-decoration: none;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        position: relative;
+        transition: color 0.2s;
+      }
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -4px; left: 0;
+        width: 0; height: 1px;
+        background: var(--neon);
+        box-shadow: 0 0 6px var(--neon);
+        transition: width 0.3s ease;
+      }
+      .nav-links a:hover { color: var(--neon); }
+      .nav-links a:hover::after { width: 100%; }
+
+      /* ─── Main Content ──────────────────────────────── */
+      main {
+        position: relative;
+        z-index: 1;
+        padding-top: 5rem;
+      }
+
+      /* ─── Utility classes ───────────────────────────── */
+      .neon-text {
+        color: var(--neon);
+        text-shadow:
+          0 0 4px var(--neon),
+          0 0 12px var(--neon),
+          0 0 24px var(--neon-dim);
+      }
+      .neon-border {
+        border: 1px solid var(--border);
+        box-shadow: 0 0 12px var(--neon-glow), inset 0 0 12px rgba(0,255,0,0.03);
+      }
+      .font-pixel   { font-family: var(--font-pixel); }
+      .font-display { font-family: var(--font-display); }
+      .font-mono    { font-family: var(--font-mono); }
+
+      /* For GSAP scroll animations — add this class to any element */
+      .gsap-fade-in { opacity: 0; transform: translateY(20px); }
+
+      /* ─── Footer ────────────────────────────────────── */
+      footer {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 2.5rem;
+        border-top: 1px solid var(--border);
+        font-family: var(--font-pixel);
+        font-size: 0.45rem;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+      }
+      footer .neon { color: var(--neon); }
+
+      /* ─── Scrollbar ─────────────────────────────────── */
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: var(--bg); }
+      ::-webkit-scrollbar-thumb { background: var(--neon-dim); border-radius: 2px; }
+
+      /* ─── Text selection ────────────────────────────── */
+      ::selection { background: var(--neon); color: var(--bg); }
+    </style>
+  </head>
+
+  <body>
+    <!-- Custom Cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Atmospheric layers -->
+    <div id="scanlines" aria-hidden="true"></div>
+    <div id="grid-bg"   aria-hidden="true"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" aria-label="Main navigation">
+      <a href="/" class="nav-logo">PORTFOLIO.EXE</a>
+      <ul class="nav-links">
+        <li><a href="#about">ABOUT</a></li>
+        <li><a href="#games">GAMES</a></li>
+        <li><a href="#skills">SKILLS</a></li>
+        <li><a href="#contact">CONTACT</a></li>
+      </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 <span class="neon">PLAYER_ONE</span> — ALL RIGHTS RESERVED — INSERT COIN TO CONTINUE</p>
+    </footer>
+
+    <!-- GSAP: Cursor + entrance + scroll animations -->
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        /* ── Custom Cursor ────────────────────────────── */
+        const cursor = document.getElementById('cursor');
+        const ring   = document.getElementById('cursor-ring');
+
+        window.addEventListener('mousemove', (e) => {
+          gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.05 });
+          gsap.to(ring,   { x: e.clientX, y: e.clientY, duration: 0.18 });
+        });
+
+        document.querySelectorAll('a, button, [data-hover]').forEach(el => {
+          el.addEventListener('mouseenter', () =>
+            gsap.to(ring, { width: 56, height: 56, opacity: 1, duration: 0.2 })
+          );
+          el.addEventListener('mouseleave', () =>
+            gsap.to(ring, { width: 36, height: 36, opacity: 0.5, duration: 0.2 })
+          );
+        });
+
+        /* ── Navbar entrance ──────────────────────────── */
+        gsap.from('#navbar', {
+          y: -60, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.2
+        });
+
+        /* ── Navbar hide on scroll down, show on up ───── */
+        ScrollTrigger.create({
+          onUpdate: (self) => {
+            if (self.direction === 1 && self.scroll() > 80) {
+              gsap.to('#navbar', { y: -80, duration: 0.3, ease: 'power2.in' });
+            } else {
+              gsap.to('#navbar', { y:   0, duration: 0.4, ease: 'power2.out' });
+            }
+          }
+        });
+
+        /* ── Scroll-triggered .gsap-fade-in elements ──── */
+        gsap.utils.toArray('.gsap-fade-in').forEach(el => {
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 88%',
+              toggleActions: 'play none none none',
+            }
+          });
+        });
+
+        /* ── Grid background subtle breathe ──────────── */
+        gsap.to('#grid-bg', {
+          opacity: 0.35,
+          duration: 3,
+          yoyo: true,
+          repeat: -1,
+          ease: 'sine.inOut'
+        });
+      });
+    </script>
+  </body>
+</html>

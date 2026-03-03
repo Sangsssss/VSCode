@@ -1,0 +1,677 @@
+---
+// src/components/HeroSelect.astro
+// Phase 1 — 캐릭터 시트 (자기소개)
+---
+
+<section class="hero-select" id="hero-select">
+
+  <!-- 상단 타이틀 바 -->
+  <div class="window-bar">
+    <span class="window-dot"></span>
+    <span class="window-dot"></span>
+    <span class="window-dot"></span>
+    <span class="window-title">CHARACTER_SELECT</span>
+    <span class="window-version">VER 1.0.0</span>
+  </div>
+
+  <div class="sheet-body">
+
+    <!-- ── 왼쪽: 캐릭터 프로필 ── -->
+    <div class="profile-panel">
+
+      <!-- 픽셀 아트 캐릭터 (SVG) -->
+      <div class="sprite-frame">
+        <svg class="pixel-char" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <!-- Head -->
+          <rect x="14" y="2"  width="20" height="20" fill="#00ff00"/>
+          <rect x="16" y="4"  width="16" height="16" fill="#0a0a0a"/>
+          <!-- Eyes -->
+          <rect x="18" y="9"  width="4"  height="4"  fill="#00ff00"/>
+          <rect x="26" y="9"  width="4"  height="4"  fill="#00ff00"/>
+          <!-- Mouth -->
+          <rect x="18" y="16" width="2"  height="2"  fill="#00ff00"/>
+          <rect x="20" y="18" width="8"  height="2"  fill="#00ff00"/>
+          <rect x="28" y="16" width="2"  height="2"  fill="#00ff00"/>
+          <!-- Neck -->
+          <rect x="21" y="22" width="6"  height="3"  fill="#00cc00"/>
+          <!-- Body -->
+          <rect x="12" y="25" width="24" height="18" fill="#00ff00"/>
+          <rect x="14" y="27" width="20" height="14" fill="#0a0a0a"/>
+          <!-- Chest detail -->
+          <rect x="20" y="29" width="8"  height="2"  fill="#00ff00"/>
+          <rect x="22" y="33" width="4"  height="4"  fill="#00ff00"/>
+          <!-- Arms -->
+          <rect x="6"  y="25" width="6"  height="14" fill="#00ff00"/>
+          <rect x="36" y="25" width="6"  height="14" fill="#00ff00"/>
+          <!-- Hands -->
+          <rect x="5"  y="39" width="8"  height="6"  fill="#00cc00"/>
+          <rect x="35" y="39" width="8"  height="6"  fill="#00cc00"/>
+          <!-- Legs -->
+          <rect x="14" y="43" width="8"  height="14" fill="#00cc00"/>
+          <rect x="26" y="43" width="8"  height="14" fill="#00cc00"/>
+          <!-- Feet -->
+          <rect x="12" y="55" width="10" height="6"  fill="#009900"/>
+          <rect x="26" y="55" width="10" height="6"  fill="#009900"/>
+        </svg>
+        <!-- 스캔 라인 오버레이 -->
+        <div class="sprite-scan"></div>
+        <!-- 빛나는 링 -->
+        <div class="sprite-ring"></div>
+      </div>
+
+      <!-- 캐릭터 기본 정보 -->
+      <div class="profile-info">
+        <p class="profile-class">// DREAM HERO</p>
+        <h2 class="profile-name">이상원</h2>
+        <div class="profile-tags">
+          <span class="tag">PROGRAMMER</span>
+          <span class="tag">DESIGNER</span>
+          <span class="tag">CREATOR</span>
+        </div>
+        <div class="profile-meta">
+          <div class="meta-row">
+            <span class="meta-label">LV</span>
+            <span class="meta-val neon-text">12</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">EXP</span>
+            <span class="meta-val">5+ YRS</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">CLASS</span>
+            <span class="meta-val">ENGINEER</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">GUILD</span>
+            <span class="meta-val">INDIE</span>
+          </div>
+        </div>
+
+        <!-- 자기소개 -->
+        <div class="profile-bio">
+          <p class="bio-label">// BIO</p>
+          <p class="bio-text">게임을 만드는 것은 세계를 만드는 일입니다.<br/>
+          플레이어가 몰입할 수 있는 경험을 설계하고,<br/>
+          코드와 아트가 만나는 접점에서 작업합니다.</p>
+          <div class="bio-stats">
+            <div class="bio-stat"><span class="bio-num neon-text">12</span><span>GAMES</span></div>
+            <div class="bio-stat"><span class="bio-num neon-text">3</span><span>JAMS WON</span></div>
+            <div class="bio-stat"><span class="bio-num neon-text">5+</span><span>YEARS XP</span></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ── 구분선 ── -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-icon">⚔</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- ── 오른쪽: 능력치 패널 ── -->
+    <div class="stats-panel">
+
+      <p class="stats-header">// ABILITY STATS</p>
+
+      <div class="stats-list">
+        {[
+          { name: "C++",        val: 88, rank: "S" },
+          { name: "C#",         val: 95, rank: "S+" },
+          { name: "Unity",      val: 92, rank: "S" },
+          { name: "Unreal",     val: 78, rank: "A" },
+          { name: "HLSL/GLSL",  val: 72, rank: "A" },
+          { name: "Game Design",val: 85, rank: "S" },
+          { name: "Godot",      val: 65, rank: "B+" },
+        ].map(stat => (
+          <div class="stat-row">
+            <div class="stat-head">
+              <span class="stat-name">{stat.name}</span>
+              <span class={`stat-rank rank-${stat.rank.replace('+','p')}`}>{stat.rank}</span>
+            </div>
+            <div class="stat-track">
+              <div class="stat-fill" data-val={stat.val}></div>
+              <!-- 픽셀 눈금 -->
+              <div class="tick" style="left:10%"></div>
+              <div class="tick" style="left:20%"></div>
+              <div class="tick" style="left:30%"></div>
+              <div class="tick" style="left:40%"></div>
+              <div class="tick" style="left:50%"></div>
+              <div class="tick" style="left:60%"></div>
+              <div class="tick" style="left:70%"></div>
+              <div class="tick" style="left:80%"></div>
+              <div class="tick" style="left:90%"></div>
+            </div>
+            <span class="stat-num">{stat.val}</span>
+          </div>
+        ))}
+      </div>
+
+      <!-- 특성 칩 -->
+      <div class="traits">
+        <p class="traits-label">// TRAITS</p>
+        <div class="traits-chips">
+          <span class="chip">FAST LEARNER</span>
+          <span class="chip">SHADER WIZARD</span>
+          <span class="chip">SYSTEM THINKER</span>
+          <span class="chip">JAM VETERAN</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ── GAME START 버튼 ── -->
+  <div class="start-wrap">
+    <button class="btn-start" id="game-start-btn" data-hover>
+      <span class="btn-arrow">▶</span>
+      <span class="btn-label">GAME START</span>
+      <span class="btn-blink">█</span>
+    </button>
+    <p class="start-hint">PRESS START TO CONTINUE</p>
+  </div>
+
+</section>
+
+<!-- ── Styles ──────────────────────────────────────────────── -->
+<style>
+  .hero-select {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 6vw 4rem;
+    position: relative;
+  }
+
+  /* Window title bar */
+  .window-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(0,255,0,0.06);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    margin-bottom: 0;
+    width: fit-content;
+    min-width: 340px;
+  }
+  .window-dot {
+    width: 11px; height: 11px;
+    background: var(--neon);
+    box-shadow: 0 0 4px var(--neon);
+    display: inline-block;
+  }
+  .window-title {
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    color: var(--neon);
+    margin-left: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+  .window-version {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  /* Main sheet body */
+  .sheet-body {
+    display: grid;
+    grid-template-columns: 340px 40px 1fr;
+    border: 1px solid var(--border);
+    background: rgba(10,10,10,0.95);
+    box-shadow: 0 0 40px rgba(0,255,0,0.07), inset 0 0 60px rgba(0,0,0,0.6);
+    flex: 1;
+  }
+
+  /* ── Profile Panel ── */
+  .profile-panel {
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    background: rgba(0,255,0,0.02);
+  }
+
+  .sprite-frame {
+    position: relative;
+    width: 180px; height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pixel-char {
+    width: 150px; height: 200px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 8px #00ff00) drop-shadow(0 0 20px #00cc00);
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+  .sprite-scan {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 3px,
+      rgba(0,255,0,0.04) 3px, rgba(0,255,0,0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 3;
+  }
+  .sprite-ring {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 16px;
+    background: radial-gradient(ellipse, rgba(0,255,0,0.3) 0%, transparent 70%);
+    animation: pulse-ring 3s ease-in-out infinite;
+    z-index: 1;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.4; transform: translateX(-50%) scaleX(1); }
+    50%       { opacity: 0.8; transform: translateX(-50%) scaleX(1.2); }
+  }
+
+  .profile-class {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    align-self: flex-start;
+  }
+  .profile-name {
+    font-family: var(--font-pixel);
+    font-size: 1.1rem;
+    color: var(--neon);
+    text-shadow: 0 0 8px var(--neon);
+    letter-spacing: 0.1em;
+    align-self: flex-start;
+    margin-top: -0.8rem;
+  }
+  .profile-bio {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .bio-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+  .bio-text {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-bottom: 1rem;
+  }
+  .bio-stats {
+    display: flex;
+    gap: 1.2rem;
+  }
+  .bio-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+  .bio-num {
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+  }
+  .bio-stat > span:last-child {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-self: flex-start;
+  }
+  .tag {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--neon-subtle);
+  }
+
+  .profile-meta {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .meta-label {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+  }
+  .meta-val {
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    color: var(--text);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+  .divider-line {
+    flex: 1;
+    width: 1px;
+    background: var(--border);
+  }
+  .divider-icon {
+    font-size: 0.8rem;
+    color: var(--neon);
+    text-shadow: 0 0 6px var(--neon);
+    writing-mode: horizontal-tb;
+  }
+
+  /* ── Stats Panel ── */
+  .stats-panel {
+    padding: 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .stats-header {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 48px;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .stat-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .stat-name {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .stat-rank {
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    padding: 0.25rem 0.55rem;
+  }
+  .rank-Sp  { color: #ff6600; border: 1px solid #ff6600; box-shadow: 0 0 6px rgba(255,102,0,0.5); }
+  .rank-S   { color: #ffcc00; border: 1px solid #ffcc00; box-shadow: 0 0 6px rgba(255,204,0,0.4); }
+  .rank-A   { color: #00ff00; border: 1px solid var(--border); }
+  .rank-Bp  { color: #66aaff; border: 1px solid #66aaff; }
+  .rank-B   { color: #aaaaff; border: 1px solid #aaaaff; }
+
+  .stat-track {
+    position: relative;
+    height: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,255,0,0.1);
+    overflow: hidden;
+  }
+  .stat-fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #006600, #00ff00);
+    box-shadow: 0 0 8px var(--neon);
+    transition: none; /* GSAP handles this */
+  }
+  .tick {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    pointer-events: none;
+  }
+  .stat-num {
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    color: var(--neon);
+    text-align: right;
+  }
+
+  /* Traits */
+  .traits { border-top: 1px solid var(--border); padding-top: 1.5rem; }
+  .traits-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+  }
+  .traits-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chip {
+    font-family: var(--font-pixel);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 1rem;
+    background: rgba(0,255,0,0.06);
+    border: 1px solid var(--border);
+    color: var(--neon);
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .chip:hover {
+    background: rgba(0,255,0,0.15);
+    box-shadow: 0 0 10px var(--neon-glow);
+  }
+
+  /* ── GAME START button ── */
+  .start-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding-top: 2.5rem;
+  }
+
+  .btn-start {
+    font-family: var(--font-pixel);
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    padding: 1.2rem 4rem;
+    background: transparent;
+    color: var(--neon);
+    border: 2px solid var(--neon);
+    box-shadow: 0 0 16px var(--neon-glow), inset 0 0 16px rgba(0,255,0,0.05);
+    cursor: none;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: background 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-start::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,0,0.15), transparent);
+    transition: left 0.4s ease;
+  }
+  .btn-start:hover::before { left: 100%; }
+  .btn-start:hover {
+    background: rgba(0,255,0,0.08);
+    box-shadow: 0 0 32px var(--neon-glow), inset 0 0 24px rgba(0,255,0,0.08);
+  }
+
+  .btn-arrow { font-size: 0.8rem; }
+  .btn-blink {
+    font-size: 0.9rem;
+    animation: blink 0.9s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .start-hint {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    letter-spacing: 0.25em;
+    color: var(--text-muted);
+    animation: fadeHint 2s ease-in-out infinite;
+  }
+  @keyframes fadeHint { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
+
+  /* ── Responsive ── */
+  @media (max-width: 860px) {
+    .sheet-body {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+    }
+    .divider {
+      flex-direction: row;
+      padding: 0 1rem;
+      height: 32px;
+    }
+    .divider-line { flex: 1; width: auto; height: 1px; }
+    .stat-row { grid-template-columns: 140px 1fr 36px; }
+    .profile-panel { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+
+<!-- ── GSAP Animations ──────────────────────────────────────── -->
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    /* ── 패널 전체 등장 ── */
+    const tl = gsap.timeline({ delay: 0.3 });
+
+    tl.from('.window-bar', { opacity: 0, y: -10, duration: 0.4, ease: 'power2.out' })
+      .from('.profile-panel', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, '-=0.1')
+      .from('.stats-panel',   { opacity: 0, x:  30, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+      .from('.start-wrap',    { opacity: 0, y:  20, duration: 0.4, ease: 'power2.out' }, '-=0.1');
+
+    /* ── 스탯 바 애니메이션 (ScrollTrigger) ── */
+    document.querySelectorAll('.stat-fill').forEach((bar, i) => {
+      const target = bar.dataset.val + '%';
+      ScrollTrigger.create({
+        trigger: bar,
+        start: 'top 90%',
+        onEnter: () => {
+          gsap.to(bar, {
+            width: target,
+            duration: 1.0,
+            delay: i * 0.08,
+            ease: 'power2.out',
+          });
+        },
+        once: true,
+      });
+    });
+
+    /* ── 숫자 카운트업 ── */
+    document.querySelectorAll('.stat-num').forEach((el, i) => {
+      const end = parseInt(el.textContent);
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 90%',
+        onEnter: () => {
+          gsap.from({ val: 0 }, {
+            val: end,
+            duration: 1.0,
+            delay: i * 0.08,
+            ease: 'power2.out',
+            onUpdate() { el.textContent = Math.round(this.targets()[0].val); },
+          });
+        },
+        once: true,
+      });
+    });
+
+    /* ── 픽셀 캐릭터 등장 ── */
+    gsap.from('.pixel-char', {
+      opacity: 0,
+      scale: 0.5,
+      duration: 0.6,
+      ease: 'back.out(1.7)',
+      delay: 0.6,
+    });
+
+    /* ── GAME START 버튼 → 다음 섹션 스크롤 ── */
+    document.getElementById('game-start-btn')?.addEventListener('click', () => {
+      // SideScroller 섹션으로 이동
+      const gameWorld = document.getElementById('scroll-driver');
+      if (gameWorld) {
+        // 버튼 클릭 이펙트
+        const btn = document.getElementById('game-start-btn');
+        gsap.to(btn, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
+
+        // 화면 플래시 효과
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;background:#00ff00;z-index:9999;pointer-events:none;';
+        document.body.appendChild(flash);
+        gsap.to(flash, {
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+          onComplete: () => flash.remove()
+        });
+
+        // 스크롤 이동
+        setTimeout(() => {
+          gsap.to(window, {
+            scrollTo: { y: gameWorld, offsetY: 0 },
+            duration: 1.0,
+            ease: 'power3.inOut',
+          });
+        }, 150);
+      }
+    });
+
+  });
+</script>

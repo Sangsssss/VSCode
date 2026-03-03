@@ -1,0 +1,1789 @@
+---
+// src/components/SideScroller.astro
+// Phase 2 — 횡스크롤 모험 엔진
+---
+
+<!-- 세로 스크롤 트리거용 래퍼 (높이가 가로 이동 거리를 결정) -->
+<div class="scroll-driver" id="scroll-driver" data-section="game-world">
+
+  <!-- 뷰포트에 고정되는 실제 씬 -->
+  <div class="scroller-sticky" id="scroller-sticky">
+
+    <!-- ── 배경 레이어 1: 별/성운 (가장 멀리, 가장 느리게) ── -->
+    <div class="layer layer-sky" id="layer-sky">
+      <!-- 별 SVG 패턴 -->
+      <svg class="stars" viewBox="0 0 1600 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        {Array.from({length: 80}).map((_, i) => {
+          const x = (i * 197 + 13) % 1600;
+          const y = (i * 83  + 47) % 300;
+          const r = i % 3 === 0 ? 2 : 1;
+          const op = 0.3 + (i % 5) * 0.12;
+          return <circle cx={x} cy={y} r={r} fill="#00ff00" opacity={op}/>;
+        })}
+        <!-- 성운 blob -->
+        <ellipse cx="300"  cy="120" rx="180" ry="60" fill="rgba(0,255,0,0.03)"/>
+        <ellipse cx="900"  cy="80"  rx="240" ry="80" fill="rgba(0,200,0,0.04)"/>
+        <ellipse cx="1400" cy="150" rx="200" ry="70" fill="rgba(0,255,0,0.03)"/>
+      </svg>
+
+      <!-- 원거리 산 실루엣 -->
+      <svg class="mountains-far" viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,200 L0,140 L80,80 L160,130 L280,40 L400,110 L520,60 L640,120 L760,30 L880,100 L1000,50 L1120,120 L1240,45 L1360,105 L1480,70 L1600,130 L1600,200 Z"
+              fill="#0d1a0d" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <!-- ── 배경 레이어 2: 중경 도시 빌딩 (중간 속도) ── -->
+    <div class="layer layer-mid" id="layer-mid">
+      <svg class="buildings" viewBox="0 0 2400 300" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- 빌딩들 -->
+        {[
+          {x:0,   w:60,  h:180}, {x:70,  w:40,  h:220}, {x:120, w:80,  h:150},
+          {x:210, w:50,  h:260}, {x:270, w:70,  h:190}, {x:350, w:45,  h:240},
+          {x:405, w:90,  h:160}, {x:505, w:55,  h:280}, {x:570, w:65,  h:200},
+          {x:645, w:40,  h:170}, {x:695, w:85,  h:250}, {x:790, w:50,  h:130},
+          {x:850, w:75,  h:270}, {x:935, w:45,  h:190}, {x:990, w:60,  h:220},
+          {x:1060,w:80,  h:160}, {x:1150,w:55,  h:300}, {x:1215,w:70,  h:180},
+          {x:1295,w:50,  h:240}, {x:1355,w:90,  h:140}, {x:1455,w:60,  h:260},
+          {x:1525,w:45,  h:200}, {x:1580,w:75,  h:170}, {x:1665,w:55,  h:290},
+          {x:1730,w:80,  h:150}, {x:1820,w:50,  h:230}, {x:1880,w:65,  h:180},
+          {x:1955,w:70,  h:260}, {x:2035,w:45,  h:140}, {x:2090,w:90,  h:220},
+          {x:2190,w:55,  h:190}, {x:2255,w:60,  h:270}, {x:2325,w:65,  h:160},
+        ].map(b => (
+          <g>
+            <rect x={b.x} y={300-b.h} width={b.w} height={b.h} fill="#0a1a0a" stroke="rgba(0,255,0,0.15)" stroke-width="1"/>
+            <!-- 창문 -->
+            {Array.from({length: Math.floor(b.h/30)}).map((_, row) =>
+              Array.from({length: Math.floor(b.w/20)}).map((_, col) => (
+                <rect
+                  x={b.x + 5 + col*18}
+                  y={300 - b.h + 8 + row*28}
+                  width="8" height="12"
+                  fill={ (row + col + b.x) % 3 === 0 ? 'rgba(0,255,0,0.6)' : 'rgba(0,255,0,0.08)' }
+                />
+              ))
+            )}
+          </g>
+        ))}
+      </svg>
+    </div>
+
+    <!-- ── 배경 레이어 3: 바닥 + 근경 (가장 빠르게) ── -->
+    <div class="layer layer-ground" id="layer-ground">
+      <!-- 바닥 플랫폼 -->
+      <svg class="ground-svg" viewBox="0 0 5500 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 바닥 라인 -->
+        <rect x="0" y="0" width="5500" height="60" fill="#0a1a0a"/>
+        <rect x="0" y="0" width="5500" height="2"  fill="#00ff00" opacity="0.9"/>
+        <!-- 바닥 픽셀 패턴 -->
+        {Array.from({length: 275}).map((_, i) => (
+          <rect x={i*20} y="2" width="18" height="4" fill="rgba(0,255,0,0.12)"/>
+        ))}
+        <!-- 가로등 -->
+        {[120,380,640,900,1160,1420,1680,1940,2200,2460,2720,2980,3240,3500,3760,4020,4280,4540,4800,5060,5300].map(x => (
+          <g>
+            <rect x={x}   y="0"  width="3"  height="20" fill="rgba(0,255,0,0.5)"/>
+            <rect x={x-8} y="-16" width="20" height="4"  fill="rgba(0,255,0,0.4)"/>
+            <rect x={x-4} y="-12" width="4"  height="4"  fill="#00ff00" opacity="0.9"/>
+          </g>
+        ))}
+      </svg>
+    </div>
+
+    <!-- ── 스크롤 이벤트 카드들 ── -->
+    <div class="scene-cards" id="scene-cards">
+
+      <div class="scene-card" data-x="15">
+        <div class="card-inner">
+          <p class="card-year">2019</p>
+          <h3 class="card-title">FIRST GAME</h3>
+          <p class="card-desc">Unity로 만든 첫 번째 2D 플랫포머.<br/>무한한 가능성의 시작.</p>
+        </div>
+      </div>
+
+      <div class="scene-card" data-x="38">
+        <div class="card-inner">
+          <p class="card-year">2021</p>
+          <h3 class="card-title">GAME JAM</h3>
+          <p class="card-desc">48시간 게임잼 우승.<br/>팀워크와 속도의 미학.</p>
+        </div>
+      </div>
+
+      <div class="scene-card" data-x="61">
+        <div class="card-inner">
+          <p class="card-year">2022</p>
+          <h3 class="card-title">SHADER CRAFT</h3>
+          <p class="card-desc">HLSL 셰이더 깊이 탐구.<br/>빛과 픽셀의 연금술.</p>
+        </div>
+      </div>
+
+      <div class="scene-card" data-x="84">
+        <div class="card-inner">
+          <p class="card-year">2024</p>
+          <h3 class="card-title">UNREAL LEAP</h3>
+          <p class="card-desc">Unreal Engine 5 전환.<br/>Nanite·Lumen 마스터.</p>
+        </div>
+      </div>
+
+      <!-- ── 보물상자들 ── -->
+      <div class="chest-wrap" data-x="22" data-chest="0">
+        <div class="chest" data-hover>
+          <svg class="chest-svg" viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+            <!-- 뚜껑 -->
+            <rect x="1" y="1" width="30" height="11" fill="#1a0a00" stroke="#ffaa00" stroke-width="1.5"/>
+            <rect x="3" y="3" width="26" height="7"  fill="#2a1400"/>
+            <rect x="12" y="2" width="8" height="3"  fill="#ffaa00" opacity="0.8"/>
+            <!-- 경첩 -->
+            <rect x="3"  y="10" width="4" height="3" fill="#ffaa00"/>
+            <rect x="25" y="10" width="4" height="3" fill="#ffaa00"/>
+            <!-- 몸통 -->
+            <rect x="1" y="12" width="30" height="15" fill="#1a0a00" stroke="#ffaa00" stroke-width="1.5"/>
+            <rect x="3" y="14" width="26" height="11" fill="#2a1400"/>
+            <!-- 자물쇠 -->
+            <rect x="13" y="13" width="6" height="5"  fill="#ffaa00"/>
+            <rect x="14" y="11" width="4" height="4"  fill="none" stroke="#ffaa00" stroke-width="1.5"/>
+            <!-- 장식 라인 -->
+            <rect x="3" y="18" width="26" height="1"  fill="#ffaa00" opacity="0.4"/>
+          </svg>
+          <div class="chest-glow"></div>
+        </div>
+      </div>
+
+      <div class="chest-wrap" data-x="45" data-chest="1">
+        <div class="chest" data-hover>
+          <svg class="chest-svg" viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+            <rect x="1" y="1" width="30" height="11" fill="#001a1a" stroke="#00ffff" stroke-width="1.5"/>
+            <rect x="3" y="3" width="26" height="7"  fill="#002a2a"/>
+            <rect x="12" y="2" width="8" height="3"  fill="#00ffff" opacity="0.8"/>
+            <rect x="3"  y="10" width="4" height="3" fill="#00ffff"/>
+            <rect x="25" y="10" width="4" height="3" fill="#00ffff"/>
+            <rect x="1" y="12" width="30" height="15" fill="#001a1a" stroke="#00ffff" stroke-width="1.5"/>
+            <rect x="3" y="14" width="26" height="11" fill="#002a2a"/>
+            <rect x="13" y="13" width="6" height="5"  fill="#00ffff"/>
+            <rect x="14" y="11" width="4" height="4"  fill="none" stroke="#00ffff" stroke-width="1.5"/>
+            <rect x="3" y="18" width="26" height="1"  fill="#00ffff" opacity="0.4"/>
+          </svg>
+          <div class="chest-glow chest-glow-cyan"></div>
+        </div>
+      </div>
+
+      <div class="chest-wrap" data-x="67" data-chest="2">
+        <div class="chest" data-hover>
+          <svg class="chest-svg" viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+            <rect x="1" y="1" width="30" height="11" fill="#0a001a" stroke="#aa00ff" stroke-width="1.5"/>
+            <rect x="3" y="3" width="26" height="7"  fill="#16002a"/>
+            <rect x="12" y="2" width="8" height="3"  fill="#aa00ff" opacity="0.8"/>
+            <rect x="3"  y="10" width="4" height="3" fill="#aa00ff"/>
+            <rect x="25" y="10" width="4" height="3" fill="#aa00ff"/>
+            <rect x="1" y="12" width="30" height="15" fill="#0a001a" stroke="#aa00ff" stroke-width="1.5"/>
+            <rect x="3" y="14" width="26" height="11" fill="#16002a"/>
+            <rect x="13" y="13" width="6" height="5"  fill="#aa00ff"/>
+            <rect x="14" y="11" width="4" height="4"  fill="none" stroke="#aa00ff" stroke-width="1.5"/>
+            <rect x="3" y="18" width="26" height="1"  fill="#aa00ff" opacity="0.4"/>
+          </svg>
+          <div class="chest-glow chest-glow-purple"></div>
+        </div>
+      </div>
+
+      <div class="chest-wrap" data-x="88" data-chest="3">
+        <div class="chest" data-hover>
+          <svg class="chest-svg" viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+            <rect x="1" y="1" width="30" height="11" fill="#001a00" stroke="#00ff00" stroke-width="1.5"/>
+            <rect x="3" y="3" width="26" height="7"  fill="#002a00"/>
+            <rect x="12" y="2" width="8" height="3"  fill="#00ff00" opacity="0.8"/>
+            <rect x="3"  y="10" width="4" height="3" fill="#00ff00"/>
+            <rect x="25" y="10" width="4" height="3" fill="#00ff00"/>
+            <rect x="1" y="12" width="30" height="15" fill="#001a00" stroke="#00ff00" stroke-width="1.5"/>
+            <rect x="3" y="14" width="26" height="11" fill="#002a00"/>
+            <rect x="13" y="13" width="6" height="5"  fill="#00ff00"/>
+            <rect x="14" y="11" width="4" height="4"  fill="none" stroke="#00ff00" stroke-width="1.5"/>
+            <rect x="3" y="18" width="26" height="1"  fill="#00ff00" opacity="0.4"/>
+          </svg>
+          <div class="chest-glow"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 중앙 고정 캐릭터 ── -->
+    <div class="player-wrap" id="player-wrap">
+      <svg class="player-sprite" id="player-sprite"
+           viewBox="0 0 28 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+
+        <!-- 뒷다리 (먼저 그려서 앞다리에 가려짐) -->
+        <rect id="leg-b"  x="9"  y="22" width="5" height="10" fill="#006600"/>
+        <rect id="foot-b" x="7"  y="30" width="8" height="4"  fill="#004400"/>
+
+        <!-- 뒷팔 -->
+        <rect id="arm-b"  x="6"  y="12" width="4" height="9"  fill="#006600"/>
+
+        <!-- 몸통 -->
+        <rect x="8"  y="10" width="12" height="13" fill="#00dd00"/>
+        <!-- 몸통 안쪽 (갑옷 느낌) -->
+        <rect x="9"  y="11" width="10" height="11" fill="#00aa00"/>
+        <!-- 배지/문양 -->
+        <rect x="11" y="13" width="6"  height="4"  fill="#0a1a0a"/>
+        <rect x="12" y="14" width="4"  height="2"  fill="#00ff00"/>
+
+        <!-- 머리: 오른쪽 방향으로 향함 -->
+        <!-- 뒷통수 -->
+        <rect x="8"  y="1"  width="4"  height="9"  fill="#00cc00"/>
+        <!-- 머리 메인 -->
+        <rect x="10" y="0"  width="12" height="10" fill="#00ff00"/>
+        <!-- 얼굴 안쪽 -->
+        <rect x="11" y="1"  width="10" height="8"  fill="#0a1a0a"/>
+        <!-- 눈 (오른쪽 방향) -->
+        <rect x="19" y="3"  width="2"  height="2"  fill="#00ff00"/>
+        <!-- 눈빛 -->
+        <rect x="20" y="3"  width="1"  height="1"  fill="#ffffff"/>
+        <!-- 입 -->
+        <rect x="19" y="6"  width="3"  height="1"  fill="#00cc00"/>
+        <!-- 코 -->
+        <rect x="21" y="4"  width="2"  height="2"  fill="#00aa00"/>
+        <!-- 헬멧 바이저 -->
+        <rect x="10" y="0"  width="12" height="3"  fill="#00cc00"/>
+        <rect x="18" y="2"  width="4"  height="2"  fill="#00ff00"/>
+
+        <!-- 앞팔 -->
+        <rect id="arm-f"  x="18" y="12" width="4" height="9"  fill="#00ee00"/>
+
+        <!-- 앞다리 -->
+        <rect id="leg-f"  x="11" y="22" width="5" height="10" fill="#00cc00"/>
+        <rect id="foot-f" x="11" y="30" width="8" height="4"  fill="#009900"/>
+      </svg>
+
+      <!-- 그림자 (SVG 아래) -->
+      <div class="player-shadow"></div>
+
+      <!-- 스크롤 중 표시되는 속도 이펙트 -->
+      <div class="speed-lines" id="speed-lines">
+        <span></span><span></span><span></span>
+        <span></span><span></span>
+      </div>
+    </div>
+
+    <!-- HUD 오버레이 -->
+    <div class="hud-top">
+      <span class="hud-label">WORLD 1-1</span>
+      <span class="hud-progress" id="hud-progress">▓░░░░░░░░░ 0%</span>
+      <span class="hud-label">SCROLL TO WALK →</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── 게임 진입 안내 오버레이 ── -->
+<div id="intro-overlay" style="
+  display:none;
+  position:fixed; inset:0; z-index:8500;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(4px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  pointer-events: all;
+">
+  <div style="
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.65rem;
+    color: rgba(0,255,0,0.5);
+    letter-spacing: 0.2em;
+    animation: blink-slow 1.5s step-end infinite;
+  ">// WORLD LOADING...</div>
+  <div style="
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    color: #00ff00;
+    text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+    letter-spacing: 0.12em;
+    text-align: center;
+    line-height: 2.2;
+  ">DREAM_HERO<br/>ENTERED THE WORLD</div>
+  <div style="
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    color: #aaa;
+    text-align: center;
+    line-height: 2;
+    max-width: 480px;
+  ">아래로 스크롤하면 플레이어가 움직입니다.<br/>이동 중 만나는 상자에 접근하면<br/><span style="color:#00ff00">[ E ]</span> 키로 열어보세요!</div>
+  <div style="
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: #555;
+    letter-spacing: 0.2em;
+    margin-top: 1rem;
+    animation: blink-slow 1s step-end infinite;
+  ">▼ SCROLL TO START ▼</div>
+</div>
+
+<!-- ── 스크롤 엔딩 오버레이 ── -->
+<!-- 엔딩: 화면 전체 flash 레이어 -->
+<div id="ending-flash" style="
+  display:none; position:fixed; inset:0; z-index:8400;
+  pointer-events:none; opacity:0;
+  background: radial-gradient(circle at 50% 78%, #00ff00 0%, #003300 40%, #000 100%);
+"></div>
+
+<!-- 엔딩: 파티클 캔버스 -->
+<canvas id="ending-canvas" style="
+  display:none; position:fixed; inset:0; z-index:8450;
+  pointer-events:none;
+"></canvas>
+
+<!-- 엔딩: 텍스트 오버레이 -->
+<div id="ending-overlay" style="
+  display:none;
+  position:fixed; inset:0; z-index:8500;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+">
+  <div id="ending-content" style="
+    display:flex; flex-direction:column; align-items:center; gap:2rem;
+    opacity:0; text-align:center;
+  ">
+    <!-- 스테이지 클리어 라벨 -->
+    <div id="ec-label" style="
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem;
+      color: #00ff00;
+      letter-spacing: 0.4em;
+      opacity:0.7;
+    ">✦ STAGE CLEAR ✦</div>
+
+    <!-- 메인 타이틀 -->
+    <div id="ec-title" style="
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: #00ff00;
+      text-shadow: 0 0 20px #00ff00, 0 0 50px #00ff00, 0 0 100px #00ff00;
+      letter-spacing: 0.2em;
+      line-height: 1.8;
+    ">WORLD 1-1<br/>COMPLETE!</div>
+
+    <!-- 구분선 -->
+    <div style="width:280px; height:1px; background: linear-gradient(to right, transparent, #00ff00, transparent);"></div>
+
+    <!-- 서브 텍스트 -->
+    <div id="ec-sub" style="
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.05rem;
+      color: #aaa;
+      line-height: 2.2;
+    ">상자를 열어 프로젝트를 확인하셨나요?<br/>스크롤을 올려 다시 탐험하거나<br/>아래로 계속 진행하세요.</div>
+
+    <!-- 계속 화살표 -->
+    <div id="ec-arrow" style="
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      color: #444;
+      letter-spacing: 0.2em;
+      animation: blink-slow 1.2s step-end infinite;
+    ">▼ CONTINUE ▼</div>
+  </div>
+</div>
+
+<style is:global>
+  @keyframes blink-slow {
+    0%,100%{opacity:1} 50%{opacity:0}
+  }
+  @keyframes scanline-move {
+    from { background-position: 0 0; }
+    to   { background-position: 0 4px; }
+  }
+</style>
+
+<!-- ── 전역 툴팁 (scroller-sticky 완전 바깥) ── -->
+<div id="chest-tip-wrap" style="display:none; position:fixed; z-index:9000; pointer-events:none;">
+  <div id="chest-tip-label" style="
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.75rem;
+    color: #ffaa00;
+    text-shadow: 0 0 10px #ffaa00;
+    background: rgba(0,0,0,0.92);
+    padding: 0.5rem 1.2rem;
+    border: 1px solid rgba(255,170,0,0.6);
+    white-space: nowrap;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    text-align: center;
+  "></div>
+  <div id="chest-tip-e" style="
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.85rem;
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+    background: rgba(0,0,0,0.95);
+    border: 2px solid #00ff00;
+    box-shadow: 0 0 16px rgba(0,255,0,0.5);
+    padding: 0.8rem 2rem;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    text-align: center;
+    animation: tip-pulse 1s ease-in-out infinite alternate;
+  ">[ E ] 열어보기</div>
+</div>
+<style is:global>
+  @keyframes tip-pulse {
+    from { box-shadow: 0 0 10px rgba(0,255,0,0.4); }
+    to   { box-shadow: 0 0 28px rgba(0,255,0,0.9); }
+  }
+</style>
+
+<!-- ── 프로젝트 모달 (scroll-driver 완전 바깥 — position:fixed 독립) ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-window" id="modal-window">
+    <div class="modal-titlebar">
+      <div class="modal-dots">
+        <span class="mdot mdot-r"></span>
+        <span class="mdot mdot-y"></span>
+        <span class="mdot mdot-g"></span>
+      </div>
+      <span class="modal-title-text" id="modal-title-text">ITEM_INFO.EXE</span>
+      <button class="modal-close" id="modal-close" data-hover>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-left">
+        <div class="modal-icon" id="modal-icon">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" width="110" height="110">
+            <rect x="8"  y="8"  width="32" height="32" fill="#0a1a0a" stroke="#00ff00" stroke-width="2"/>
+            <rect x="12" y="12" width="24" height="24" fill="#001400"/>
+            <rect x="20" y="18" width="8"  height="12" fill="#00ff00"/>
+            <rect x="16" y="22" width="16" height="4"  fill="#00ff00"/>
+          </svg>
+        </div>
+        <h2 class="modal-project-name" id="modal-project-name">VOID RUNNER</h2>
+        <p class="modal-genre" id="modal-genre">Platformer · Unity</p>
+        <div class="modal-year-badge" id="modal-year-badge">2024</div>
+        <div class="modal-stack">
+          <p class="modal-stack-label">// TECH STACK</p>
+          <div class="modal-stack-chips" id="modal-stack-chips"></div>
+        </div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-right">
+        <div class="modal-section">
+          <p class="modal-section-label">// OVERVIEW</p>
+          <p class="modal-overview" id="modal-overview"></p>
+        </div>
+        <div class="modal-section">
+          <p class="modal-section-label">// KEY ACHIEVEMENTS</p>
+          <ul class="modal-achievements" id="modal-achievements"></ul>
+        </div>
+        <div class="modal-section">
+          <p class="modal-section-label">// STATUS</p>
+          <div class="modal-status">
+            <span class="status-dot"></span>
+            <span class="status-text" id="modal-status-text">SHIPPED</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <a class="modal-btn-primary" id="modal-link" href="#" data-hover>▶ VIEW PROJECT</a>
+          <button class="modal-btn-ghost" id="modal-close-btn" data-hover>✕ CLOSE</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-scanline"></div>
+  </div>
+</div>
+
+<!-- ── 모달 전용 글로벌 스타일 (scoped 미적용 방지) ── -->
+<style is:global>
+  .modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.92) !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.25s !important;
+    backdrop-filter: blur(8px) !important;
+    padding: 2vh 2vw !important;
+  }
+  .modal-overlay.open {
+    opacity: 1 !important;
+    pointer-events: all !important;
+  }
+  .modal-window {
+    width: min(1200px, 94vw) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    background: #050d05 !important;
+    border: 2px solid rgba(0,255,0,0.4) !important;
+    box-shadow:
+      0 0 0 1px rgba(0,255,0,0.2),
+      0 0 80px rgba(0,255,0,0.3),
+      inset 0 0 60px rgba(0,0,0,0.8) !important;
+    position: relative !important;
+    transform: scale(0.88) translateY(30px);
+    transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1) !important;
+  }
+  .modal-overlay.open .modal-window {
+    transform: scale(1) translateY(0) !important;
+  }
+  .modal-titlebar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    padding: 1rem 1.5rem !important;
+    background: rgba(0,255,0,0.08) !important;
+    border-bottom: 1px solid rgba(0,255,0,0.2) !important;
+  }
+  .modal-dots { display: flex !important; gap: 8px !important; }
+  .mdot { width: 14px !important; height: 14px !important; display: inline-block !important; border-radius: 0 !important; }
+  .mdot-r { background: #ff5f57 !important; box-shadow: 0 0 6px #ff5f57 !important; }
+  .mdot-y { background: #febc2e !important; box-shadow: 0 0 6px #febc2e !important; }
+  .mdot-g { background: #28c840 !important; box-shadow: 0 0 6px #28c840 !important; }
+  .modal-title-text {
+    font-family: 'Press Start 2P', monospace !important;
+    font-size: 0.8rem !important;
+    color: #00ff00 !important;
+    letter-spacing: 0.1em !important;
+    flex: 1 !important;
+    text-align: center !important;
+  }
+  .modal-close {
+    font-size: 1.2rem !important;
+    color: #666 !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 0.4rem !important;
+    transition: color 0.2s !important;
+    font-family: monospace !important;
+  }
+  .modal-close:hover { color: #ff5f57 !important; }
+  .modal-body {
+    display: grid !important;
+    grid-template-columns: 340px 1px 1fr !important;
+    min-height: 560px !important;
+  }
+  .modal-left {
+    padding: 2.5rem 2rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    background: rgba(0,255,0,0.02) !important;
+    text-align: center !important;
+    border-right: 1px solid rgba(0,255,0,0.15) !important;
+  }
+  .modal-icon {
+    width: 160px !important;
+    height: 160px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(0,255,0,0.3) !important;
+    background: #0a0a0a !important;
+    margin-bottom: 0.8rem !important;
+  }
+  .modal-project-name {
+    font-family: 'Press Start 2P', monospace !important;
+    font-size: 1.1rem !important;
+    color: #00ff00 !important;
+    text-shadow: 0 0 10px #00ff00 !important;
+    letter-spacing: 0.08em !important;
+    line-height: 1.7 !important;
+  }
+  .modal-genre {
+    font-family: 'Orbitron', monospace !important;
+    font-size: 0.85rem !important;
+    color: #666 !important;
+    letter-spacing: 0.12em !important;
+  }
+  .modal-year-badge {
+    font-family: 'Press Start 2P', monospace !important;
+    font-size: 0.7rem !important;
+    color: #ffaa00 !important;
+    border: 1px solid #ffaa00 !important;
+    padding: 0.35rem 1rem !important;
+    box-shadow: 0 0 8px rgba(255,170,0,0.4) !important;
+  }
+  .modal-stack { width: 100% !important; text-align: left !important; margin-top: 0.8rem !important; }
+  .modal-stack-label {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 0.85rem !important;
+    color: #666 !important;
+    margin-bottom: 0.8rem !important;
+  }
+  .modal-stack-chips { display: flex !important; flex-wrap: wrap !important; gap: 0.5rem !important; }
+  .stack-chip {
+    font-family: 'Press Start 2P', monospace !important;
+    font-size: 0.5rem !important;
+    letter-spacing: 0.06em !important;
+    padding: 0.45rem 0.9rem !important;
+    background: rgba(0,255,0,0.08) !important;
+    border: 1px solid rgba(0,255,0,0.25) !important;
+    color: #00ff00 !important;
+  }
+  .modal-divider { background: rgba(0,255,0,0.15) !important; width: 1px !important; }
+  .modal-right {
+    padding: 2.5rem 2.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  .modal-section { display: flex !important; flex-direction: column !important; gap: 0.7rem !important; }
+  .modal-section-label {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 0.9rem !important;
+    color: #666 !important;
+    letter-spacing: 0.1em !important;
+    border-bottom: 1px solid rgba(0,255,0,0.1) !important;
+    padding-bottom: 0.4rem !important;
+  }
+  .modal-overview {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 1.05rem !important;
+    color: #e0e0e0 !important;
+    line-height: 2 !important;
+  }
+  .modal-achievements { list-style: none !important; padding: 0 !important; display: flex !important; flex-direction: column !important; gap: 0.7rem !important; }
+  .modal-achievements li {
+    font-family: 'Share Tech Mono', monospace !important;
+    font-size: 1rem !important;
+    color: #aaa !important;
+    padding-left: 1.6rem !important;
+    position: relative !important;
+    line-height: 1.8 !important;
+  }
+  .modal-achievements li::before {
+    content: '▶' !important;
+    position: absolute !important;
+    left: 0 !important;
+    color: #00ff00 !important;
+    font-size: 0.65rem !important;
+    top: 0.18rem !important;
+  }
+  .modal-status { display: flex !important; align-items: center !important; gap: 0.7rem !important; }
+  .status-dot {
+    width: 10px !important; height: 10px !important;
+    background: #00ff00 !important;
+    box-shadow: 0 0 8px #00ff00 !important;
+    animation: blink-dot 1.2s ease-in-out infinite !important;
+    flex-shrink: 0 !important;
+  }
+  @keyframes blink-dot { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .status-text {
+    font-family: 'Orbitron', monospace !important;
+    font-size: 0.9rem !important;
+    color: #00ff00 !important;
+    letter-spacing: 0.2em !important;
+  }
+  .modal-actions { display: flex !important; gap: 1rem !important; margin-top: auto !important; flex-wrap: wrap !important; }
+  .modal-btn-primary {
+    font-family: 'Press Start 2P', monospace !important;
+    font-size: 0.65rem !important;
+    letter-spacing: 0.1em !important;
+    padding: 1rem 2.4rem !important;
+    background: #00ff00 !important;
+    color: #0a0a0a !important;
+    text-decoration: none !important;
+    clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%) !important;
+    display: inline-block !important;
+  }
+  .modal-btn-ghost {
+    font-family: 'Press Start 2P', monospace !important;
+    font-size: 0.65rem !important;
+    letter-spacing: 0.1em !important;
+    padding: 1rem 2.4rem !important;
+    background: transparent !important;
+    color: #666 !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    cursor: pointer !important;
+    transition: color 0.2s !important;
+  }
+  .modal-btn-ghost:hover { color: #e0e0e0 !important; }
+  .modal-scanline {
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+    ) !important;
+    z-index: 1 !important;
+  }
+
+  /* 워킹 애니메이션 — specificity 높여서 강제 적용 */
+  html body #player-wrap.walking #player-sprite {
+    animation: player-walk-bob 0.3s steps(1) infinite !important;
+  }
+  @keyframes player-walk-bob {
+    0%  { transform: translateY(0px)  scaleX(1);    }
+    25% { transform: translateY(-8px) scaleX(1.05); }
+    50% { transform: translateY(-3px) scaleX(0.97); }
+    75% { transform: translateY(-9px) scaleX(1.03); }
+    100%{ transform: translateY(0px)  scaleX(1);    }
+  }
+</style>
+
+<!-- ── Styles ───────────────────────────────────────────────── -->
+<style>
+  /* ── 드라이버: 세로 스크롤 공간 확보 ── */
+  .scroll-driver {
+    height: 500vh;   /* 이 높이 = 가로 이동 거리 */
+    position: relative;
+  }
+
+  /* ── sticky 씬: 뷰포트에 고정 ── */
+  .scroller-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: #050d05;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── 공통 레이어 ── */
+  .layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+  }
+
+  /* 레이어 1: 하늘 */
+  .layer-sky {
+    bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .stars {
+    position: absolute;
+    top: 0; left: 0;
+    width: 200%; height: 70%;
+  }
+  .mountains-far {
+    position: absolute;
+    bottom: 22%;
+    left: 0;
+    width: 200%;
+    height: 25%;
+  }
+
+  /* 레이어 2: 중경 빌딩 */
+  .layer-mid {
+    bottom: 0;
+    height: 100%;
+  }
+  .buildings {
+    position: absolute;
+    bottom: 22%;
+    left: 0;
+    width: 300%;
+    height: 45%;
+  }
+
+  /* 레이어 3: 바닥 */
+  .layer-ground {
+    bottom: 0;
+    height: 22%;
+  }
+  .ground-svg {
+    width: 550%;       /* TRAVEL=4vw * 1.00 이동 + 여유 1.5vw */
+    height: 100%;
+    position: absolute;
+    bottom: 0; left: 0;
+  }
+
+  /* ── 씬 카드 ── */
+  .scene-cards {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .scene-card {
+    position: absolute;
+    top: 12%;
+    pointer-events: all;
+  }
+  .card-inner {
+    background: rgba(10,26,10,0.95);
+    border: 1px solid var(--border);
+    box-shadow: 0 0 40px rgba(0,255,0,0.2), inset 0 0 20px rgba(0,0,0,0.5);
+    padding: 2.8rem 3.2rem;
+    width: 380px;
+    backdrop-filter: blur(6px);
+    position: relative;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .card-inner.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .card-year {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-muted);
+    letter-spacing: 0.14em;
+    margin-bottom: 0.7rem;
+  }
+  .card-title {
+    font-family: var(--font-pixel);
+    font-size: 1rem;
+    color: var(--neon);
+    text-shadow: 0 0 14px var(--neon);
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+  }
+  .card-desc {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 2;
+  }
+
+  /* ── 플레이어 ── */
+  .player-wrap {
+    position: absolute;
+    /* bottom=22% = 바닥선
+       sprite height=192, 발 y=34/40*192=163px, 여백=29px
+       margin-bottom:-29px → wrap이 바닥선 아래 29px까지 확장 → 발=바닥선 */
+    bottom: 22%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    /* shadow를 absolute로 분리하므로 wrap = sprite만 */
+    width: 144px;
+    height: 192px;
+    margin-bottom: -29px;
+  }
+  .player-sprite {
+    width: 144px;
+    height: 192px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 6px #00ff00) drop-shadow(0 0 14px #00cc00);
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+  .player-shadow {
+    position: absolute;
+    bottom: 22px;   /* 발 여백(29px) 근처 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px; height: 5px;
+    background: radial-gradient(ellipse, rgba(0,255,0,0.5) 0%, transparent 70%);
+    animation: shadow-pulse 0.5s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+  @keyframes shadow-pulse {
+    from { transform: scaleX(1);   opacity: 0.5; }
+    to   { transform: scaleX(0.7); opacity: 0.2; }
+  }
+
+  /* 워킹 애니메이션은 is:global 블록에서만 처리 */
+
+  /* 스피드 라인 */
+  .speed-lines {
+    position: absolute;
+    right: calc(100% + 8px);
+    top: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .speed-lines.active { opacity: 1; }
+  .speed-lines span {
+    display: block;
+    height: 2px;
+    background: linear-gradient(to left, var(--neon), transparent);
+    animation: speedline 0.25s linear infinite;
+  }
+  .speed-lines span:nth-child(1) { width: 28px; animation-delay: 0s;    }
+  .speed-lines span:nth-child(2) { width: 18px; animation-delay: 0.05s; }
+  .speed-lines span:nth-child(3) { width: 36px; animation-delay: 0.1s;  }
+  .speed-lines span:nth-child(4) { width: 14px; animation-delay: 0.15s; }
+  .speed-lines span:nth-child(5) { width: 24px; animation-delay: 0.2s;  }
+  @keyframes speedline {
+    from { transform: translateX(0);    opacity: 1; }
+    to   { transform: translateX(-10px); opacity: 0; }
+  }
+
+  /* HUD */
+  .hud-top {
+    position: absolute;
+    top: 1.2rem;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .hud-label {
+    font-family: var(--font-pixel);
+    font-size: 0.5rem;
+    color: var(--neon);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 6px var(--neon);
+  }
+  .hud-progress {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--neon);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── 보물상자 ────────────────────────────────────────── */
+  .chest-wrap {
+    position: absolute;
+    bottom: 22%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    z-index: 8;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chest-wrap.positioned {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* 상자 이름 라벨 — JS가 position:fixed 좌표 직접 지정 */
+  .chest-label {
+    position: fixed;
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    color: #ffaa00;
+    text-shadow: 0 0 10px #ffaa00;
+    background: rgba(0,0,0,0.92);
+    padding: 0.5rem 1.2rem;
+    border: 1px solid rgba(255,170,0,0.6);
+    white-space: nowrap;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9000;
+    transition: opacity 0.2s;
+    transform: translateX(-50%);
+  }
+  .chest-wrap.near .chest-label { opacity: 1; }
+
+  /* E키 툴팁 */
+  .chest-tooltip {
+    position: fixed;
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+    color: var(--neon);
+    text-shadow: 0 0 10px var(--neon);
+    background: rgba(0,0,0,0.95);
+    border: 2px solid var(--neon);
+    box-shadow: 0 0 16px rgba(0,255,0,0.5);
+    padding: 0.8rem 2rem;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9000;
+    transition: opacity 0.2s;
+    transform: translateX(-50%);
+    animation: tooltip-pulse 1s ease-in-out infinite alternate;
+  }
+  @keyframes tooltip-pulse {
+    from { box-shadow: 0 0 10px rgba(0,255,0,0.4); }
+    to   { box-shadow: 0 0 28px rgba(0,255,0,0.85); }
+  }
+  .chest-wrap.near .chest-tooltip { opacity: 1; }
+
+  .chest {
+    position: relative;
+    width: 88px; height: 76px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .chest:hover { transform: translateY(-6px); }
+  .chest-svg {
+    width: 88px; height: 76px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 5px #ffaa00) drop-shadow(0 0 10px rgba(255,170,0,0.4));
+  }
+  .chest-wrap.opened .chest-svg {
+    filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px #ffaa00);
+  }
+  .chest-glow {
+    position: absolute;
+    bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 14px;
+    background: radial-gradient(ellipse, rgba(255,170,0,0.5) 0%, transparent 70%);
+    animation: chest-pulse 1.5s ease-in-out infinite alternate;
+  }
+  .chest-glow-cyan   { background: radial-gradient(ellipse, rgba(0,255,255,0.5) 0%, transparent 70%); }
+  .chest-glow-purple { background: radial-gradient(ellipse, rgba(170,0,255,0.5) 0%, transparent 70%); }
+  @keyframes chest-pulse {
+    from { opacity: 0.4; transform: translateX(-50%) scaleX(0.9); }
+    to   { opacity: 0.9; transform: translateX(-50%) scaleX(1.2); }
+  }
+
+  /* 모달은 is:global 블록에서 처리 */
+
+  /* 타이틀 바 */
+  .modal-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.2rem;
+    background: rgba(0,255,0,0.07);
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-dots { display: flex; gap: 6px; }
+  .mdot {
+    width: 12px; height: 12px;
+    display: inline-block;
+  }
+  .mdot-r { background: #ff5f57; box-shadow: 0 0 4px #ff5f57; }
+  .mdot-y { background: #febc2e; box-shadow: 0 0 4px #febc2e; }
+  .mdot-g { background: #28c840; box-shadow: 0 0 4px #28c840; }
+
+  .modal-title-text {
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    color: var(--neon);
+    letter-spacing: 0.1em;
+    flex: 1;
+    text-align: center;
+  }
+  .modal-close {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: none;
+    padding: 0 0.3rem;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: #ff5f57; }
+
+  /* 모달 본문 */
+  .modal-body {
+    display: grid;
+    grid-template-columns: 360px 1px 1fr;
+    min-height: 580px;
+  }
+
+  /* 왼쪽 패널 */
+  .modal-left {
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(0,255,0,0.02);
+    text-align: center;
+  }
+  .modal-icon {
+    width: 160px; height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border);
+    background: #0a0a0a;
+    margin-bottom: 0.8rem;
+  }
+  .modal-project-name {
+    font-family: var(--font-pixel);
+    font-size: 1.2rem;
+    color: var(--neon);
+    text-shadow: 0 0 10px var(--neon);
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+  }
+  .modal-genre {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+  }
+  .modal-year-badge {
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    color: #ffaa00;
+    border: 1px solid #ffaa00;
+    padding: 0.35rem 1rem;
+    box-shadow: 0 0 8px rgba(255,170,0,0.4);
+  }
+  .modal-stack { width: 100%; text-align: left; margin-top: 0.5rem; }
+  .modal-stack-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+  }
+  .modal-stack-chips {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+  }
+  .stack-chip {
+    font-family: var(--font-pixel);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.9rem;
+    background: rgba(0,255,0,0.07);
+    border: 1px solid var(--border);
+    color: var(--neon);
+  }
+
+  /* 구분선 */
+  .modal-divider { background: var(--border); }
+
+  /* 오른쪽 패널 */
+  .modal-right {
+    padding: 2.5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .modal-section { display: flex; flex-direction: column; gap: 0.6rem; }
+  .modal-section-label {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+  .modal-overview {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    color: var(--text);
+    line-height: 2;
+  }
+  .modal-achievements {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .modal-achievements li {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    padding-left: 1.6rem;
+    position: relative;
+    line-height: 1.8;
+  }
+  .modal-achievements li::before {
+    content: '▶';
+    position: absolute;
+    left: 0;
+    color: var(--neon);
+    font-size: 0.6rem;
+    top: 0.15rem;
+  }
+  .modal-status { display: flex; align-items: center; gap: 0.6rem; }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: var(--neon);
+    box-shadow: 0 0 6px var(--neon);
+    animation: blink-dot 1.2s ease-in-out infinite;
+  }
+  @keyframes blink-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .status-text {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--neon);
+    letter-spacing: 0.15em;
+  }
+  .modal-actions { display: flex; gap: 1rem; margin-top: auto; flex-wrap: wrap; }
+  .modal-btn-primary {
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    padding: 1rem 2.4rem;
+    background: var(--neon);
+    color: #0a0a0a;
+    text-decoration: none;
+    clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+    transition: box-shadow 0.2s;
+  }
+  .modal-btn-primary:hover { box-shadow: 0 0 16px var(--neon-glow); }
+  .modal-btn-ghost {
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    padding: 1rem 2.4rem;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: none;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .modal-btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+
+  /* 스캔라인 */
+  .modal-scanline {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
+    );
+    z-index: 1;
+  }
+
+</style>
+
+<!-- ── GSAP ScrollTrigger 횡스크롤 엔진 ────────────────────── -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const driver     = document.getElementById('scroll-driver');
+  const layerSky   = document.getElementById('layer-sky');
+  const layerMid   = document.getElementById('layer-mid');
+  const layerGnd   = document.getElementById('layer-ground');
+  const sceneCards = document.getElementById('scene-cards');
+  const sprite     = document.getElementById('player-sprite');
+  const speedLines = document.getElementById('speed-lines');
+  const hudProg    = document.getElementById('hud-progress');
+
+  const TRAVEL = () => window.innerWidth * 4;
+
+  // ── 프로젝트 데이터 ──────────────────────────────────
+  const PROJECTS = [
+    {
+      name: 'VOID RUNNER',
+      genre: 'Platformer · Unity',
+      year: '2024',
+      icon_color: '#ffaa00',
+      stack: ['Unity', 'C#', 'HLSL', 'Cinemachine', 'DOTween'],
+      overview: '무한 생성 절차적 맵과 물리 기반 이동 시스템을 갖춘 2.5D 플랫포머. 플레이어가 매 런마다 다른 경험을 할 수 있도록 설계되었습니다.',
+      achievements: [
+        '절차적 맵 생성 알고리즘으로 재플레이성 300% 향상',
+        '커스텀 캐릭터 컨트롤러로 응답성 극대화 (입력 지연 < 2ms)',
+        'Steam Early Access 출시, 첫 주 2,400+ 다운로드',
+        '커스텀 셰이더로 독특한 네온 비주얼 스타일 구현',
+      ],
+      status: 'SHIPPED',
+      link: '#'
+    },
+    {
+      name: 'NEON SIEGE',
+      genre: 'Tower Defense · UE5',
+      year: '2023',
+      icon_color: '#00ffff',
+      stack: ['Unreal Engine 5', 'C++', 'Blueprint', 'Niagara', 'Nanite'],
+      overview: 'Unreal Engine 5의 Nanite·Lumen을 활용한 사이버펑크 타워 디펜스. 200개 이상의 동시 유닛을 처리하는 고성능 AI 시스템이 핵심입니다.',
+      achievements: [
+        'Niagara VFX 파티클 시스템으로 몰입형 전투 이펙트 구현',
+        'ECS 패턴 적용으로 200+ 유닛 동시 처리 최적화',
+        '게임잼 48시간 내 프로토타입 완성, 우승작 선정',
+        'Lumen 글로벌 일루미네이션 실시간 적용',
+      ],
+      status: 'SHIPPED',
+      link: '#'
+    },
+    {
+      name: 'ECHO PROTOCOL',
+      genre: 'Puzzle · Godot',
+      year: '2023',
+      icon_color: '#aa00ff',
+      stack: ['Godot 4', 'GDScript', 'Shader (GLSL)', 'Wwise'],
+      overview: '시간 되감기 메커닉을 기반으로 한 1인칭 퍼즐 게임. 플레이어의 과거 행동이 현재 퍼즐의 열쇠가 되는 독창적 구조를 갖추고 있습니다.',
+      achievements: [
+        '시간 역행 시스템 자체 구현 (상태 스냅샷 + 보간)',
+        'Wwise 연동으로 퍼즐 진행에 반응하는 동적 사운드스케이프',
+        'itch.io 퍼즐 카테고리 주간 Top 10 달성',
+        '색약 접근성 모드 완비로 포용적 디자인 실현',
+      ],
+      status: 'SHIPPED',
+      link: '#'
+    },
+    {
+      name: 'PIXEL CRUSADE',
+      genre: 'RPG · Unity',
+      year: '2022',
+      icon_color: '#00ff00',
+      stack: ['Unity', 'C#', 'Yarn Spinner', 'Aseprite', 'FMOD'],
+      overview: '16비트 감성의 픽셀아트 턴제 RPG. 분기형 내러티브와 전략적 전투 시스템이 결합된 40시간 분량의 스토리를 담고 있습니다.',
+      achievements: [
+        'Yarn Spinner 기반 분기 대화 시스템 2,000+ 노드 구현',
+        'FMOD 적응형 음악으로 전투 강도에 따른 BGM 자동 전환',
+        'Kickstarter 캠페인 목표액 180% 달성',
+        '턴제 전투 AI에 A* + 우선순위 큐 적용으로 전략성 강화',
+      ],
+      status: 'SHIPPED',
+      link: '#'
+    },
+  ];
+
+  // ── 모달 로직 ────────────────────────────────────────
+  const overlay   = document.getElementById('modal-overlay');
+  const modalWin  = document.getElementById('modal-window');
+  const closeBtn  = document.getElementById('modal-close');
+  const closeBtnG = document.getElementById('modal-close-btn');
+
+  function openModal(idx) {
+    const p = PROJECTS[idx];
+    document.getElementById('modal-title-text').textContent  = p.name + '.EXE';
+    document.getElementById('modal-project-name').textContent = p.name;
+    document.getElementById('modal-genre').textContent        = p.genre;
+    document.getElementById('modal-year-badge').textContent   = p.year;
+    document.getElementById('modal-overview').textContent     = p.overview;
+    document.getElementById('modal-status-text').textContent  = p.status;
+    document.getElementById('modal-link').href                = p.link;
+
+    // 아이콘 색 교체
+    const icon = document.getElementById('modal-icon');
+    icon.style.borderColor = p.icon_color;
+    icon.querySelector('svg rect:first-child').setAttribute('stroke', p.icon_color);
+
+    // 스택 칩
+    const chipsEl = document.getElementById('modal-stack-chips');
+    chipsEl.innerHTML = p.stack.map(s =>
+      `<span class="stack-chip">${s}</span>`
+    ).join('');
+
+    // 업적 리스트
+    const achEl = document.getElementById('modal-achievements');
+    achEl.innerHTML = p.achievements.map(a =>
+      `<li>${a}</li>`
+    ).join('');
+
+    console.log('[Modal] opening:', p.name, overlay);
+    overlay.classList.add('open');
+    // body overflow hidden 제거 — 스크롤 씬에서 충돌 방지
+    // document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  closeBtnG.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  // ── 패럴랙스 ScrollTrigger ───────────────────────────
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: driver,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 1,
+      onUpdate: (self) => {
+        const p = self.progress;
+
+        // HUD 진행바
+        const pct    = Math.round(p * 100);
+        const filled = Math.round(p * 10);
+        const bar    = '▓'.repeat(filled) + '░'.repeat(10 - filled);
+        hudProg.textContent = `${bar} ${pct}%`;
+
+        // HUD만 onUpdate에서 처리 (walking은 ticker로 분리)
+
+        // 보물상자 근접 감지 + 전역 툴팁 위치 제어
+        const chests = document.querySelectorAll('.chest-wrap');
+        const tipWrap = document.getElementById('chest-tip-wrap');
+        const tipLabel = document.getElementById('chest-tip-label');
+        const tipE     = document.getElementById('chest-tip-e');
+        const CHEST_NAMES = ['VOID RUNNER', 'NEON SIEGE', 'ECHO PROTOCOL', 'PIXEL CRUSADE'];
+
+        let anyNear = false;
+        chests.forEach(chest => {
+          const chestScreenX = parseFloat(chest.style.left || 0) - TRAVEL() * p;
+          const playerX = window.innerWidth * 0.5;
+          const dist = Math.abs(chestScreenX - playerX);
+          const isNear = dist < 120;
+          chest.classList.toggle('near', isNear);
+
+          if (isNear) {
+            anyNear = true;
+            const idx = parseInt(chest.dataset.chest);
+            // 상자 화면 중심 X
+            const cx = chestScreenX + 44;
+            // 바닥 라인 Y (scroller-sticky top=0, height=100vh, ground=22%)
+            const groundY = window.innerHeight * 0.78;
+            // 상자 높이 76px → 상자 상단 Y
+            const chestTop = groundY - 76;
+            tipLabel.textContent = CHEST_NAMES[idx];
+            // 툴팁을 상자 위 중앙에 배치
+            tipWrap.style.display   = 'flex';
+            tipWrap.style.flexDirection = 'column';
+            tipWrap.style.alignItems = 'center';
+            tipWrap.style.left      = cx + 'px';
+            tipWrap.style.top       = (chestTop - 90) + 'px';
+            tipWrap.style.transform = 'translateX(-50%)';
+          }
+        });
+
+        if (!anyNear) {
+          tipWrap.style.display = 'none';
+        }
+      },
+    }
+  });
+
+  tl.to(layerSky,   { x: () => -TRAVEL() * 0.18, ease: 'none' }, 0)
+    .to(layerMid,   { x: () => -TRAVEL() * 0.50, ease: 'none' }, 0)
+    .to(layerGnd,   { x: () => -TRAVEL() * 1.00, ease: 'none' }, 0)
+    .to(sceneCards, { x: () => -TRAVEL() * 1.00, ease: 'none' }, 0);
+
+  // ── 워킹 애니메이션: 측면뷰 — x/y 좌표 직접 조작 ─────────────
+  const playerWrap = document.getElementById('player-wrap');
+
+  // 측면뷰 요소들
+  const legF  = document.getElementById('leg-f');
+  const legB  = document.getElementById('leg-b');
+  const footF = document.getElementById('foot-f');
+  const footB = document.getElementById('foot-b');
+  const armF  = document.getElementById('arm-f');
+  const armB  = document.getElementById('arm-b');
+
+  // idle 기준값 (새 SVG viewBox 28x40 기준)
+  const BASE = {
+    legF:  { x:11, y:22 }, legB:  { x:9,  y:22 },
+    footF: { x:11, y:30 }, footB: { x:7,  y:30 },
+    armF:  { x:18, y:12 }, armB:  { x:6,  y:12 },
+  };
+
+  let walkFrame   = 0;
+  let isWalking   = false;
+  let lastScrollY = window.scrollY;
+  let stopTimer   = null;
+
+  function setIdle() {
+    legF.setAttribute('x',  BASE.legF.x);  legF.setAttribute('y',  BASE.legF.y);
+    legB.setAttribute('x',  BASE.legB.x);  legB.setAttribute('y',  BASE.legB.y);
+    footF.setAttribute('x', BASE.footF.x); footF.setAttribute('y', BASE.footF.y);
+    footB.setAttribute('x', BASE.footB.x); footB.setAttribute('y', BASE.footB.y);
+    armF.setAttribute('x',  BASE.armF.x);  armF.setAttribute('y',  BASE.armF.y);
+    armB.setAttribute('x',  BASE.armB.x);  armB.setAttribute('y',  BASE.armB.y);
+  }
+
+  function applyWalkFrame(t) {
+    const s = Math.sin(t * Math.PI * 2); // -1 ~ 1
+
+    // 앞다리: 앞으로 나갈 때 x+, 발 들어올림 y-
+    const lfX = Math.round(BASE.legF.x + s * 4);
+    const lfY = Math.round(BASE.legF.y - Math.max(0, s) * 6);
+    legF.setAttribute('x', lfX);
+    legF.setAttribute('y', lfY);
+    footF.setAttribute('x', lfX);
+    footF.setAttribute('y', Math.round(BASE.footF.y - Math.max(0, s) * 5));
+
+    // 뒷다리: 반대 위상
+    const lbX = Math.round(BASE.legB.x - s * 4);
+    const lbY = Math.round(BASE.legB.y - Math.max(0, -s) * 6);
+    legB.setAttribute('x', lbX);
+    legB.setAttribute('y', lbY);
+    footB.setAttribute('x', lbX - 1);
+    footB.setAttribute('y', Math.round(BASE.footB.y - Math.max(0, -s) * 5));
+
+    // 앞팔: 다리 반대로 (뒤로 가면 팔은 앞으로)
+    armF.setAttribute('y', Math.round(BASE.armF.y + s * 3));
+    // 뒷팔: 앞팔 반대
+    armB.setAttribute('y', Math.round(BASE.armB.y - s * 3));
+  }
+
+  // 매 프레임
+  gsap.ticker.add(() => {
+    const currentY = window.scrollY;
+    const delta    = Math.abs(currentY - lastScrollY);
+    lastScrollY    = currentY;
+
+    if (delta > 0.3) {
+      isWalking = true;
+      speedLines.classList.add('active');
+      clearTimeout(stopTimer);
+      stopTimer = setTimeout(() => {
+        isWalking = false;
+        speedLines.classList.remove('active');
+        setIdle();
+      }, 200);
+    }
+
+    if (isWalking) {
+      walkFrame = (walkFrame + 0.055) % 1;
+      applyWalkFrame(walkFrame);
+    }
+  });
+
+  // ── 씬 카드 위치 ─────────────────────────────────────
+  const cards = document.querySelectorAll('.scene-card');
+  cards.forEach(card => {
+    const xPct = parseFloat(card.dataset.x) / 100;
+    card.style.left = (xPct * TRAVEL()) + 'px';
+    ScrollTrigger.create({
+      trigger: driver,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        const screenX = parseFloat(card.style.left) - TRAVEL() * self.progress;
+        const inView  = screenX > -100 && screenX < window.innerWidth * 0.75;
+        card.querySelector('.card-inner').classList.toggle('visible', inView);
+      }
+    });
+  });
+
+  // ── 보물상자 위치 + 클릭 이벤트 ─────────────────────
+  const chests = document.querySelectorAll('.chest-wrap');
+  chests.forEach(chest => {
+    const xPct  = parseFloat(chest.dataset.x) / 100;
+    const idx   = parseInt(chest.dataset.chest);
+    chest.style.left = (xPct * TRAVEL()) + 'px';
+    chest.classList.add('positioned');
+
+    // 상자 색상 목록
+    const CHEST_COLORS = ['#ffaa00','#00ffff','#aa00ff','#00ff00'];
+
+    // 클릭 / E키 공통 열기 함수
+    function triggerOpen() {
+      chest.classList.remove('opened');  // 매번 초기화로 재개방 허용
+      const svg   = chest.querySelector('.chest-svg');
+      const color = CHEST_COLORS[idx];
+
+      // 뚜껑 열리는 SVG 조작: 뚜껑(첫 번째 rect)을 위로
+      const lid = svg.querySelector('rect');
+
+      // 빛 번쩍 엘리먼트 생성
+      const flash = document.createElement('div');
+      flash.style.cssText = `
+        position:fixed; inset:0; pointer-events:none; z-index:8000;
+        background: radial-gradient(circle at 50% 78%, ${color}44 0%, transparent 60%);
+        opacity:0;
+      `;
+      document.body.appendChild(flash);
+
+      // 시퀀스
+      gsap.timeline()
+        // 1. 상자 위로 튀어오름
+        .to(svg, { y: -14, duration: 0.12, ease: 'power2.out' })
+        // 2. 화면 빛 flash
+        .to(flash, { opacity: 1, duration: 0.15, ease: 'power2.out' }, '-=0.05')
+        // 3. 뚜껑 열림 (y 올라감)
+        .to(lid,  { attr: { y: -12 }, duration: 0.2, ease: 'back.out(2)' }, '-=0.1')
+        // 4. 상자 떨림
+        .to(svg, { x: 4, duration: 0.05, yoyo: true, repeat: 5, ease: 'none' }, '-=0.1')
+        // 5. 강한 glow
+        .to(chest.querySelector('.chest-svg'), {
+          filter: `drop-shadow(0 0 20px ${color}) drop-shadow(0 0 40px ${color})`,
+          duration: 0.2
+        }, '-=0.2')
+        // 6. flash 페이드아웃
+        .to(flash, { opacity: 0, duration: 0.4 })
+        // 7. 모달 오픈
+        .call(() => {
+          chest.classList.add('opened');
+          flash.remove();
+          openModal(idx);
+        });
+    }
+
+    chest.querySelector('.chest').addEventListener('click', triggerOpen);
+
+    // E 키
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'e' || e.key === 'E') && chest.classList.contains('near')) {
+        triggerOpen();
+      }
+    });
+  });
+
+  // ── 리사이즈 대응 ─────────────────────────────────────
+  ScrollTrigger.addEventListener('refreshInit', () => {
+    cards.forEach(card => {
+      const xPct = parseFloat(card.dataset.x) / 100;
+      card.style.left = (xPct * TRAVEL()) + 'px';
+    });
+    chests.forEach(chest => {
+      const xPct = parseFloat(chest.dataset.x) / 100;
+      chest.style.left = (xPct * TRAVEL()) + 'px';
+      chest.classList.add('positioned');
+    });
+  });
+
+  // ── 입장 애니메이션 ───────────────────────────────────
+  gsap.from('.hud-top',    { opacity: 0, y: -10, duration: 0.6, delay: 0.3 });
+  gsap.from('.player-wrap',{ opacity: 0, scale: 0.5, duration: 0.5,
+    ease: 'back.out(1.7)', delay: 0.5 });
+
+  // ── 진입 안내 오버레이 ─────────────────────────────────
+  const introOverlay  = document.getElementById('intro-overlay');
+  const endingOverlay = document.getElementById('ending-overlay');
+  const endingContent = document.getElementById('ending-content');
+  let   introHidden   = false;
+  let   endingShown   = false;
+
+  // IntersectionObserver로 드라이버 가시성 감지
+  const introObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !introHidden) {
+        // 드라이버가 보이기 시작하면 즉시 intro 표시
+        introOverlay.style.display = 'flex';
+        gsap.set(introOverlay, { opacity: 0 });
+        gsap.to(introOverlay, { opacity: 1, duration: 0.5 });
+        gsap.fromTo(Array.from(introOverlay.children),
+          { opacity: 0, y: 25 },
+          { opacity: 1, y: 0, stagger: 0.18, duration: 0.6, ease: 'power2.out' }
+        );
+      }
+    });
+  }, { threshold: 0.05 });
+  introObserver.observe(driver);
+
+  // driver sticky 진입(스크롤 시작) 시 intro 숨김
+  ScrollTrigger.create({
+    trigger: driver,
+    start: 'top top',
+    onEnter: () => {
+      introHidden = true;
+      gsap.to(introOverlay, {
+        opacity: 0, duration: 0.4,
+        onComplete: () => { introOverlay.style.display = 'none'; }
+      });
+    },
+    onLeaveBack: () => {
+      // 스크롤 되돌아오면 다시 보여줌
+      introHidden = false;
+      introOverlay.style.display = 'flex';
+      gsap.set(introOverlay, { opacity: 1 });
+    }
+  });
+
+  // ── 스크롤 엔딩 ────────────────────────────────────────
+  const endingFlash  = document.getElementById('ending-flash');
+  const endingCanvas = document.getElementById('ending-canvas');
+
+  // 픽셀 파티클 시스템
+  function launchParticles() {
+    const canvas = endingCanvas;
+    canvas.style.display = 'block';
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+
+    const COLORS = ['#00ff00','#00cc00','#33ff33','#ffffff','#ffff00','#00ffff'];
+    const particles = Array.from({length: 120}, () => ({
+      x: Math.random() * canvas.width,
+      y: canvas.height * 0.8 + Math.random() * 50,
+      vx: (Math.random() - 0.5) * 8,
+      vy: -(Math.random() * 14 + 6),
+      size: Math.floor(Math.random() * 6 + 3),  // 픽셀 느낌
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      life: 1,
+      decay: Math.random() * 0.015 + 0.008,
+      gravity: 0.25,
+    }));
+
+    let rafId;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      particles.forEach(p => {
+        if (p.life <= 0) return;
+        alive = true;
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.vy += p.gravity;
+        p.vx *= 0.99;
+        p.life -= p.decay;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.color;
+        // 픽셀 파티클
+        ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+      });
+      ctx.globalAlpha = 1;
+      if (alive) rafId = requestAnimationFrame(draw);
+      else { canvas.style.display = 'none'; cancelAnimationFrame(rafId); }
+    }
+    draw();
+    return rafId;
+  }
+
+  // ── 엔딩: progress 0.92 이상이면 발동 ─────────────────────
+  function fireEnding() {
+    if (endingShown) return;
+    endingShown = true;
+
+    // 1단계: 화면 번쩍
+    endingFlash.style.display = 'block';
+    gsap.timeline()
+      .to(endingFlash, { opacity: 1, duration: 0.15, ease: 'power3.in' })
+      .to(endingFlash, { opacity: 0, duration: 0.8, ease: 'power2.out' })
+      .call(() => { endingFlash.style.display = 'none'; });
+
+    // 2단계: 파티클
+    setTimeout(launchParticles, 80);
+
+    // 3단계: 오버레이 + 텍스트
+    setTimeout(() => {
+      endingOverlay.style.display = 'flex';
+      endingOverlay.style.background = 'rgba(0,0,0,0)';
+
+      gsap.timeline()
+        .to(endingOverlay, { background: 'rgba(0,0,0,0.85)', duration: 0.7 })
+        .to(endingContent, { opacity: 1, duration: 0.1 }, '-=0.3')
+        .fromTo('#ec-label',
+          { opacity: 0, y: -16, scale: 0.8 },
+          { opacity: 0.8, y: 0, scale: 1, duration: 0.45, ease: 'back.out(2)' }, '-=0.1'
+        )
+        .fromTo('#ec-title',
+          { opacity: 0, scale: 1.35, filter: 'blur(16px)' },
+          { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.65, ease: 'power3.out' }
+        )
+        .to('#ec-title', { textShadow: '0 0 8px #00ff00', duration: 0.08 })
+        .to('#ec-title', { textShadow: '0 0 20px #00ff00, 0 0 60px #00ff00, 0 0 120px #00ff00', duration: 0.3 })
+        .fromTo('#ec-sub',
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '-=0.1'
+        )
+        .fromTo('#ec-arrow', { opacity: 0 }, { opacity: 1, duration: 0.35 });
+    }, 250);
+  }
+
+  function resetEnding() {
+    endingShown = false;
+    endingOverlay.style.display = 'none';
+    endingFlash.style.display = 'none';
+    endingCanvas.style.display = 'none';
+    gsap.set(endingContent, { opacity: 0 });
+    gsap.set([endingOverlay], { background: 'rgba(0,0,0,0)' });
+    gsap.set('#ec-label,#ec-title,#ec-sub,#ec-arrow', { clearProps: 'all' });
+  }
+
+  // 메인 ScrollTrigger onUpdate에 progress 감지 추가
+  ScrollTrigger.create({
+    trigger: driver,
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate: (self) => {
+      if (self.progress >= 0.92 && !endingShown) {
+        fireEnding();
+      }
+      if (self.progress < 0.88 && endingShown) {
+        resetEnding();
+      }
+    }
+  });
+});
+</script>
