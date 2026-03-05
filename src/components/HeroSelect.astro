@@ -3,7 +3,7 @@
 // Phase 1 — 캐릭터 시트 (자기소개)
 ---
 
-<section class="hero-select" id="hero-select">
+<section class="hero-select" id="about">
 
   <!-- 상단 타이틀 바 -->
   <div class="window-bar">
@@ -21,37 +21,155 @@
 
       <!-- 픽셀 아트 캐릭터 (SVG) -->
       <div class="sprite-frame">
-        <svg class="pixel-char" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <!-- Head -->
-          <rect x="14" y="2"  width="20" height="20" fill="#00ff00"/>
-          <rect x="16" y="4"  width="16" height="16" fill="#0a0a0a"/>
-          <!-- Eyes -->
-          <rect x="18" y="9"  width="4"  height="4"  fill="#00ff00"/>
-          <rect x="26" y="9"  width="4"  height="4"  fill="#00ff00"/>
-          <!-- Mouth -->
-          <rect x="18" y="16" width="2"  height="2"  fill="#00ff00"/>
-          <rect x="20" y="18" width="8"  height="2"  fill="#00ff00"/>
-          <rect x="28" y="16" width="2"  height="2"  fill="#00ff00"/>
-          <!-- Neck -->
-          <rect x="21" y="22" width="6"  height="3"  fill="#00cc00"/>
-          <!-- Body -->
-          <rect x="12" y="25" width="24" height="18" fill="#00ff00"/>
-          <rect x="14" y="27" width="20" height="14" fill="#0a0a0a"/>
-          <!-- Chest detail -->
-          <rect x="20" y="29" width="8"  height="2"  fill="#00ff00"/>
-          <rect x="22" y="33" width="4"  height="4"  fill="#00ff00"/>
-          <!-- Arms -->
-          <rect x="6"  y="25" width="6"  height="14" fill="#00ff00"/>
-          <rect x="36" y="25" width="6"  height="14" fill="#00ff00"/>
-          <!-- Hands -->
-          <rect x="5"  y="39" width="8"  height="6"  fill="#00cc00"/>
-          <rect x="35" y="39" width="8"  height="6"  fill="#00cc00"/>
-          <!-- Legs -->
-          <rect x="14" y="43" width="8"  height="14" fill="#00cc00"/>
-          <rect x="26" y="43" width="8"  height="14" fill="#00cc00"/>
-          <!-- Feet -->
-          <rect x="12" y="55" width="10" height="6"  fill="#009900"/>
-          <rect x="26" y="55" width="10" height="6"  fill="#009900"/>
+        <svg class="pixel-char" viewBox="0 0 64 88" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+
+          <!-- ═══ 고양이 귀 ═══ -->
+          <rect x="16" y="2"  width="2"  height="6"  fill="#00ff00"/>
+          <rect x="18" y="2"  width="2"  height="4"  fill="#00ff00"/>
+          <rect x="16" y="2"  width="4"  height="2"  fill="#00ff00"/>
+          <rect x="17" y="3"  width="2"  height="4"  fill="#002200"/>
+          <rect x="46" y="2"  width="2"  height="6"  fill="#00ff00"/>
+          <rect x="44" y="2"  width="2"  height="4"  fill="#00ff00"/>
+          <rect x="44" y="2"  width="4"  height="2"  fill="#00ff00"/>
+          <rect x="45" y="3"  width="2"  height="4"  fill="#002200"/>
+
+          <!-- ═══ 헤드폰 밴드 ═══ -->
+          <rect x="18" y="7"  width="28" height="3"  fill="#00bb00"/>
+          <rect x="19" y="8"  width="26" height="1"  fill="#007700"/>
+          <!-- 왼쪽 컵 -->
+          <rect x="11" y="15" width="8"  height="11" fill="#00aa00"/>
+          <rect x="12" y="16" width="6"  height="9"  fill="#001800"/>
+          <rect x="13" y="17" width="4"  height="7"  fill="#002500"/>
+          <!-- 오른쪽 컵 -->
+          <rect x="45" y="15" width="8"  height="11" fill="#00aa00"/>
+          <rect x="46" y="16" width="6"  height="9"  fill="#001800"/>
+          <rect x="47" y="17" width="4"  height="7"  fill="#002500"/>
+
+          <!-- ═══ 머리 ═══ -->
+          <rect x="17" y="8"  width="30" height="22" fill="#00ff00"/>
+          <rect x="19" y="9"  width="26" height="20" fill="#00ee00"/>
+          <!-- 머리카락 -->
+          <rect x="17" y="8"  width="30" height="5"  fill="#003300"/>
+          <rect x="19" y="9"  width="26" height="4"  fill="#004400"/>
+          <!-- 머리 옆면 어두움 -->
+          <rect x="17" y="8"  width="3"  height="22" fill="#00cc00"/>
+          <rect x="44" y="8"  width="3"  height="22" fill="#00cc00"/>
+
+          <!-- ═══ 안경 ═══ -->
+          <!-- 왼쪽 프레임 -->
+          <rect x="19" y="18" width="11" height="8"  fill="#001200"/>
+          <rect x="19" y="18" width="11" height="1"  fill="#00ff00"/>
+          <rect x="19" y="25" width="11" height="1"  fill="#00ff00"/>
+          <rect x="19" y="18" width="1"  height="8"  fill="#00ff00"/>
+          <rect x="29" y="18" width="1"  height="8"  fill="#00ff00"/>
+          <rect x="21" y="20" width="7"  height="4"  fill="#001800"/>
+          <rect x="21" y="20" width="2"  height="2"  fill="#00ff00" opacity="0.45"/>
+          <!-- 오른쪽 프레임 -->
+          <rect x="34" y="18" width="11" height="8"  fill="#001200"/>
+          <rect x="34" y="18" width="11" height="1"  fill="#00ff00"/>
+          <rect x="34" y="25" width="11" height="1"  fill="#00ff00"/>
+          <rect x="34" y="18" width="1"  height="8"  fill="#00ff00"/>
+          <rect x="44" y="18" width="1"  height="8"  fill="#00ff00"/>
+          <rect x="36" y="20" width="7"  height="4"  fill="#001800"/>
+          <rect x="36" y="20" width="2"  height="2"  fill="#00ff00" opacity="0.45"/>
+          <!-- 코받침 -->
+          <rect x="30" y="21" width="4"  height="1"  fill="#00cc00"/>
+          <!-- 사이드 안경다리 -->
+          <rect x="14" y="19" width="5"  height="1"  fill="#00cc00"/>
+          <rect x="45" y="19" width="5"  height="1"  fill="#00cc00"/>
+
+          <!-- ═══ 눈 ═══ -->
+          <rect x="21" y="20" width="7"  height="4"  fill="#00ff00"/>
+          <rect x="36" y="20" width="7"  height="4"  fill="#00ff00"/>
+          <rect x="23" y="21" width="3"  height="2"  fill="#002200"/>
+          <rect x="38" y="21" width="3"  height="2"  fill="#002200"/>
+          <rect x="24" y="21" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="39" y="21" width="1"  height="1"  fill="#00ff00"/>
+
+          <!-- ═══ 코 ═══ -->
+          <rect x="30" y="24" width="4"  height="2"  fill="#00cc00"/>
+          <rect x="31" y="25" width="2"  height="1"  fill="#009900"/>
+
+          <!-- ═══ 입 ═══ -->
+          <rect x="25" y="27" width="14" height="2"  fill="#009900"/>
+          <rect x="24" y="27" width="1"  height="1"  fill="#00cc00"/>
+          <rect x="39" y="27" width="1"  height="1"  fill="#00cc00"/>
+          <rect x="26" y="26" width="12" height="1"  fill="#00dd00"/>
+
+          <!-- ═══ 목 ═══ -->
+          <rect x="26" y="30" width="12" height="6"  fill="#00ee00"/>
+          <rect x="27" y="31" width="10" height="4"  fill="#00dd00"/>
+
+          <!-- ═══ 몸통 ═══ -->
+          <rect x="14" y="36" width="36" height="24" fill="#0d0d0d"/>
+          <!-- 네온 외곽선 -->
+          <rect x="14" y="36" width="36" height="2"  fill="#00dd00"/>
+          <rect x="14" y="58" width="36" height="2"  fill="#00dd00"/>
+          <rect x="14" y="36" width="2"  height="24" fill="#00dd00"/>
+          <rect x="48" y="36" width="2"  height="24" fill="#00dd00"/>
+          <!-- 어깨 -->
+          <rect x="16" y="38" width="32" height="2"  fill="#00aa00"/>
+
+          <!-- ═══ 팔 ═══ -->
+          <rect x="4"  y="36" width="10" height="20" fill="#0d0d0d"/>
+          <rect x="4"  y="36" width="10" height="2"  fill="#00dd00"/>
+          <rect x="4"  y="36" width="2"  height="20" fill="#00dd00"/>
+          <rect x="50" y="36" width="10" height="20" fill="#0d0d0d"/>
+          <rect x="50" y="36" width="10" height="2"  fill="#00dd00"/>
+          <rect x="58" y="36" width="2"  height="20" fill="#00dd00"/>
+
+          <!-- ═══ 손 ═══ -->
+          <rect x="3"  y="55" width="12" height="9"  fill="#00ee00"/>
+          <rect x="4"  y="56" width="10" height="7"  fill="#00cc00"/>
+          <rect x="5"  y="57" width="8"  height="5"  fill="#00bb00"/>
+          <rect x="49" y="55" width="12" height="9"  fill="#00ee00"/>
+          <rect x="50" y="56" width="10" height="7"  fill="#00cc00"/>
+          <rect x="51" y="57" width="8"  height="5"  fill="#00bb00"/>
+
+          <!-- ═══ 노트북 ═══ -->
+          <rect x="18" y="40" width="28" height="20" fill="#00aa00"/>
+          <rect x="19" y="41" width="26" height="16" fill="#000e00"/>
+          <!-- 화면 상단 줄 -->
+          <rect x="19" y="41" width="26" height="2"  fill="#003300"/>
+          <!-- 코드 라인 -->
+          <rect x="21" y="44" width="14" height="1"  fill="#00ff00" opacity="0.95"/>
+          <rect x="23" y="46" width="10" height="1"  fill="#00ff00" opacity="0.75"/>
+          <rect x="21" y="48" width="16" height="1"  fill="#00ff00" opacity="0.85"/>
+          <rect x="23" y="50" width="8"  height="1"  fill="#00ff00" opacity="0.65"/>
+          <rect x="21" y="52" width="12" height="1"  fill="#00ff00" opacity="0.75"/>
+          <rect x="23" y="54" width="9"  height="1"  fill="#00ff00" opacity="0.55"/>
+          <!-- < 기호 -->
+          <rect x="38" y="44" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="37" y="45" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="37" y="46" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="38" y="47" width="1"  height="1"  fill="#00ff00"/>
+          <!-- <> 기호 -->
+          <rect x="37" y="50" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="38" y="51" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="37" y="52" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="39" y="51" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="40" y="50" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="41" y="51" width="1"  height="1"  fill="#00ff00"/>
+          <rect x="40" y="52" width="1"  height="1"  fill="#00ff00"/>
+          <!-- 하단 베젤 -->
+          <rect x="18" y="57" width="28" height="3"  fill="#007700"/>
+          <!-- dev 텍스트 -->
+          <rect x="20" y="58" width="7"  height="1"  fill="#00ff00" opacity="0.7"/>
+          <!-- 노트북 받침 -->
+          <rect x="17" y="60" width="30" height="2"  fill="#005500"/>
+
+          <!-- ═══ 다리 ═══ -->
+          <rect x="18" y="62" width="12" height="17" fill="#00bb00"/>
+          <rect x="19" y="63" width="10" height="15" fill="#00aa00"/>
+          <rect x="34" y="62" width="12" height="17" fill="#00bb00"/>
+          <rect x="35" y="63" width="10" height="15" fill="#00aa00"/>
+
+          <!-- ═══ 발 ═══ -->
+          <rect x="15" y="77" width="16" height="5"  fill="#008800"/>
+          <rect x="16" y="78" width="14" height="3"  fill="#006600"/>
+          <rect x="33" y="77" width="16" height="5"  fill="#008800"/>
+          <rect x="34" y="78" width="14" height="3"  fill="#006600"/>
+
         </svg>
         <!-- 스캔 라인 오버레이 -->
         <div class="sprite-scan"></div>
@@ -61,21 +179,20 @@
 
       <!-- 캐릭터 기본 정보 -->
       <div class="profile-info">
-        <p class="profile-class">// DREAM HERO</p>
-        <h2 class="profile-name">이상원</h2>
+        <p class="profile-class">// NICKNAME</p>
+        <h2 class="profile-name">SANGS</h2>
         <div class="profile-tags">
           <span class="tag">PROGRAMMER</span>
-          <span class="tag">DESIGNER</span>
           <span class="tag">CREATOR</span>
         </div>
         <div class="profile-meta">
           <div class="meta-row">
-            <span class="meta-label">LV</span>
-            <span class="meta-val neon-text">12</span>
+            <span class="meta-label">AGE</span>
+            <span class="meta-val neon-text">26</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">EXP</span>
-            <span class="meta-val">5+ YRS</span>
+            <span class="meta-val">7+ YRS</span>
           </div>
           <div class="meta-row">
             <span class="meta-label">CLASS</span>
@@ -92,10 +209,9 @@
           <p class="bio-label">// BIO</p>
           <p class="bio-text">게임을 만드는 것은 세계를 만드는 일입니다.<br/>
           플레이어가 몰입할 수 있는 경험을 설계하고,<br/>
-          코드와 아트가 만나는 접점에서 새로운 세계를 창조합니다.</p>
+          코드와 아트가 만나는 접점에서 작업합니다.</p>
           <div class="bio-stats">
-            <div class="bio-stat"><span class="bio-num neon-text">12</span><span>GAMES</span></div>
-            <div class="bio-stat"><span class="bio-num neon-text">3</span><span>JAMS WON</span></div>
+            <div class="bio-stat"><span class="bio-num neon-text">5</span><span>GAMES</span></div>
             <div class="bio-stat"><span class="bio-num neon-text">5+</span><span>YEARS XP</span></div>
           </div>
         </div>
@@ -149,15 +265,128 @@
         ))}
       </div>
 
+      <!-- 학력 / 경력 — 패시브 스킬 카드 -->
+      <div class="history">
+        <div class="history-header">
+          <p class="history-label">// PASSIVE_SKILLS LOADED</p>
+        </div>
+
+        <!-- 가로 3열 그리드 -->
+        <div class="skill-cards">
+
+          <!-- CARD 1: 명지대 -->
+          <div class="sk-card edu-card" data-skill="edu">
+            <!-- 스캔 레이저 -->
+            <div class="sk-scan"></div>
+            <!-- 코너 HEX -->
+            <!-- 아이콘 & 슬롯명 -->
+            <div class="sk-header">
+              <span class="sk-icon">🎓</span>
+              <div>
+                <p class="sk-slot">PASSIVE SLOT #01</p>
+                <p class="sk-codename">ORIGIN: THE ACADEMIA</p>
+              </div>
+            </div>
+            <!-- 설명 -->
+            <div class="sk-body">
+              <p class="sk-line"><span class="sk-key">BASE_CLASS</span><span class="sk-val">학사 학위</span></p>
+              <p class="sk-line"><span class="sk-key">SOURCE_CODE</span><span class="sk-val">응용소프트웨어전공</span></p>
+              <p class="sk-line"><span class="sk-key">INSTITUTE</span><span class="sk-val">명지대학교</span></p>
+              <p class="sk-line"><span class="sk-key">PERIOD</span><span class="sk-val">2018.03 – 2024.02</span></p>
+            </div>
+            <!-- 충전 바 -->
+            <div class="sk-bar-wrap">
+              <div class="sk-bar-track">
+                <div class="sk-bar-fill edu-fill" data-w="100" style="width:100%"></div>
+              </div>
+              <span class="sk-bar-label">SKILL_LV MAX</span>
+            </div>
+          </div>
+
+          <!-- CARD 2: 경일게임아카데미 -->
+          <div class="sk-card boot-card" data-skill="boot">
+            <div class="sk-scan"></div>
+            <div class="sk-header">
+              <span class="sk-icon">⚡</span>
+              <div>
+                <p class="sk-slot">PASSIVE SLOT #02</p>
+                <p class="sk-codename">EXP BOOST: VR/AR MASTER</p>
+              </div>
+            </div>
+            <div class="sk-body">
+              <p class="sk-line"><span class="sk-key">SESSION_TYPE</span><span class="sk-val">특수 스킬 트레이닝</span></p>
+              <p class="sk-line"><span class="sk-key">SPEC</span><span class="sk-val">VR/AR 게임개발</span></p>
+              <p class="sk-line"><span class="sk-key">INSTITUTE</span><span class="sk-val">경일게임아카데미</span></p>
+              <p class="sk-line"><span class="sk-key">PERIOD</span><span class="sk-val">2024.03 – 2024.11</span></p>
+            </div>
+            <div class="sk-bar-wrap">
+              <div class="sk-bar-track">
+                <div class="sk-bar-fill boot-fill" data-w="100" style="width:100%"></div>
+              </div>
+              <span class="sk-bar-label">XP_BOOST +340%</span>
+            </div>
+          </div>
+
+          <!-- CARD 3: 군복무 -->
+          <div class="sk-card mil-card" data-skill="mil">
+            <div class="sk-scan"></div>
+            <div class="sk-header">
+              <span class="sk-icon">🎖</span>
+              <div>
+                <p class="sk-slot">PASSIVE SLOT #03</p>
+                <p class="sk-codename">PHYSICAL HARDENING: COMPLETE</p>
+              </div>
+            </div>
+            <div class="sk-body">
+              <p class="sk-line"><span class="sk-key">QUEST_TYPE</span><span class="sk-val">방어력 강화 퀘스트</span></p>
+              <p class="sk-line"><span class="sk-key">UNIT</span><span class="sk-val">1사단 17포병대대</span></p>
+              <p class="sk-line"><span class="sk-key">RANK</span><span class="sk-val">병장 만기전역</span></p>
+              <p class="sk-line"><span class="sk-key">STATUS</span><span class="sk-val edu-val">✔ COMPLETED</span></p>
+            </div>
+            <div class="sk-bar-wrap">
+              <div class="sk-bar-track">
+                <div class="sk-bar-fill mil-fill" data-w="100" style="width:100%"></div>
+              </div>
+              <span class="sk-bar-label">DEF +999 / MIND +999</span>
+            </div>
+          </div>
+
+        </div>
+        <!-- 시스템 상태 표시줄 -->
+        <div class="history-status">
+          <span class="hs-dot"></span>
+          <span class="hs-text">SYSTEM_STATUS: OPTIMAL</span>
+          <span class="hs-sep">|</span>
+          <span class="hs-text" id="hs-tick">PASSIVE_SKILLS: 3/3 LOADED</span>
+        </div>
+      </div>
+
       <!-- 특성 칩 -->
       <div class="traits">
         <p class="traits-label">// TRAITS</p>
         <div class="traits-chips">
-          <span class="chip">FAST LEARNER</span>
-          <span class="chip">SHADER WIZARD</span>
-          <span class="chip">SYSTEM THINKER</span>
-          <span class="chip">JAM VETERAN</span>
+          <span class="chip" data-trait="gym">💪 IRON PROTOCOL</span>
+          <span class="chip" data-trait="soccer">⚽ FIELD HACKER</span>
+          <span class="chip" data-trait="blog">✍️ DEV LOGGER</span>
+          <span class="chip" data-trait="jam">🎮 JAM VETERAN</span>
         </div>
+      </div>
+
+      <!-- 트레잇 이미지 팝업 -->
+      <div id="trait-popup" style="display:none; position:fixed; inset:0; z-index:9500; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); align-items:center; justify-content:center; flex-direction:column; gap:1.5rem;">
+        <div style="position:relative; border:2px solid #00ff00; box-shadow:0 0 30px rgba(0,255,0,0.5); max-width:420px; width:90%;">
+          <div style="background:#050d05; padding:0.6rem 1rem; border-bottom:1px solid rgba(0,255,0,0.3); display:flex; justify-content:space-between; align-items:center;">
+            <span id="trait-title" style="font-family:'Press Start 2P',monospace; font-size:0.6rem; color:#00ff00; letter-spacing:0.1em;"></span>
+            <button id="trait-close" style="background:none; border:none; color:#00ff00; font-size:1.2rem; cursor:pointer; line-height:1;">✕</button>
+          </div>
+          <div id="trait-img-wrap" style="width:100%; aspect-ratio:4/3; background:#020a02; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;">
+            <!-- 이미지가 없을 때 픽셀아트 플레이스홀더 -->
+            <svg id="trait-placeholder" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" style="width:160px; opacity:0.7;"></svg>
+            <img id="trait-img" src="" alt="" style="width:100%; height:100%; object-fit:cover; display:none;"/>
+          </div>
+          <div id="trait-desc" style="background:#050d05; padding:0.8rem 1rem; font-family:'Share Tech Mono',monospace; font-size:0.85rem; color:#888; line-height:1.7; white-space:pre-line;"></div>
+        </div>
+        <p style="font-family:'Press Start 2P',monospace; font-size:0.5rem; color:#333; letter-spacing:0.2em; animation: blink-txt 1s step-end infinite;">[ CLICK ANYWHERE TO CLOSE ]</p>
       </div>
 
     </div>
@@ -242,15 +471,15 @@
 
   .sprite-frame {
     position: relative;
-    width: 180px; height: 240px;
+    width: 240px; height: 330px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .pixel-char {
-    width: 150px; height: 200px;
+    width: 240px; height: 330px;  /* viewBox 64:88 비율 */
     image-rendering: pixelated;
-    filter: drop-shadow(0 0 8px #00ff00) drop-shadow(0 0 20px #00cc00);
+    filter: drop-shadow(0 0 12px #00ff00) drop-shadow(0 0 28px #00cc00) drop-shadow(0 0 50px rgba(0,255,0,0.35));
     animation: float 3s ease-in-out infinite;
     position: relative;
     z-index: 2;
@@ -402,10 +631,12 @@
 
   /* ── Stats Panel ── */
   .stats-panel {
-    padding: 2.5rem 3rem;
+    padding: 2.5rem 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    min-width: 0;
+    overflow: visible;
   }
 
   .stats-header {
@@ -482,6 +713,249 @@
   }
 
   /* Traits */
+  /* ══ PASSIVE SKILL CARDS ══ */
+  .history {
+    border-top: 1px solid var(--border);
+    padding-top: 1.2rem;
+    margin-bottom: 0.2rem;
+  }
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.9rem;
+  }
+  .history-label {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+
+  /* 가로 3열 그리드 */
+  .skill-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* 카드 공통 */
+  .sk-card {
+    position: relative;
+    padding: 1rem 1rem 0.9rem;
+    overflow: hidden;
+    cursor: default;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-width: 0;
+    word-break: keep-all;
+  }
+  .sk-card:hover { transform: translateY(-2px); }
+
+  /* 카드 색상 */
+  .sk-card.edu-card  {
+    background: rgba(0,180,255,0.06);
+    border: 1px solid rgba(0,180,255,0.35);
+    border-top: 2px solid #55ccff;
+  }
+  .sk-card.boot-card {
+    background: rgba(255,200,0,0.05);
+    border: 1px solid rgba(255,200,0,0.35);
+    border-top: 2px solid #ffcc44;
+  }
+  .sk-card.mil-card  {
+    background: rgba(0,255,0,0.05);
+    border: 1px solid rgba(0,255,0,0.3);
+    border-top: 2px solid #00ff00;
+  }
+  .sk-card.edu-card:hover  { box-shadow: 0 0 18px rgba(0,180,255,0.2); }
+  .sk-card.boot-card:hover { box-shadow: 0 0 18px rgba(255,200,0,0.18); }
+  .sk-card.mil-card:hover  { box-shadow: 0 0 18px rgba(0,255,0,0.18); }
+
+  /* 스캔 레이저 */
+  .sk-scan {
+    position: absolute;
+    top: -4px; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(to right, transparent, rgba(0,255,0,0.7), transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sk-card.edu-card  .sk-scan { background: linear-gradient(to right,transparent,rgba(0,180,255,0.9),transparent); }
+  .sk-card.boot-card .sk-scan { background: linear-gradient(to right,transparent,rgba(255,200,0,0.9),transparent); }
+  .sk-card.mil-card  .sk-scan { background: linear-gradient(to right,transparent,rgba(0,255,0,0.9),transparent); }
+
+
+
+  /* 헤더: 아이콘 + 슬롯명 */
+  .sk-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  .sk-icon {
+    font-size: 2rem;
+    line-height: 1;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .sk-slot {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    margin-bottom: 0.25rem;
+    opacity: 0.75;
+  }
+  .sk-codename {
+    font-family: var(--font-pixel);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    letter-spacing: 0.03em;
+    word-break: break-word;
+  }
+  .edu-card  .sk-codename { color: #55ccff; }
+  .boot-card .sk-codename { color: #ffcc44; }
+  .mil-card  .sk-codename { color: #00ff88; }
+
+  /* 내용 키-값 */
+  .sk-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
+    margin-bottom: 0.7rem;
+  }
+  .sk-line {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    font-family: var(--font-mono);
+    line-height: 1.4;
+    min-width: 0;
+    margin-bottom: 0.35rem;
+  }
+  .sk-key {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+    font-family: var(--font-display);
+  }
+  .sk-key::after { content: ' ›'; }
+  .sk-val {
+    color: var(--text);
+    font-size: 1.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Galmuri11', var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .edu-val { color: #00ff88; font-family: var(--font-pixel); font-size: 1.2rem; }
+
+  /* 충전 바 */
+  .sk-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .sk-bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+    position: relative;
+  }
+  .edu-card  .sk-bar-track { border: 1px solid rgba(0,180,255,0.2); }
+  .boot-card .sk-bar-track { border: 1px solid rgba(255,200,0,0.2); }
+  .mil-card  .sk-bar-track { border: 1px solid rgba(0,255,0,0.18); }
+  .sk-bar-fill {
+    height: 100%;
+    width: 100%;
+    transition: none;
+  }
+  /* 색상 + 글로우 펄스 통합 */
+  .edu-fill {
+    background: linear-gradient(to right, #0077aa, #55ccff);
+    animation: bar-glow-edu 2.5s ease-in-out infinite;
+  }
+  .boot-fill {
+    background: linear-gradient(to right, #aa8800, #ffcc44);
+    animation: bar-glow-boot 2.5s ease-in-out infinite;
+  }
+  .mil-fill {
+    background: linear-gradient(to right, #006600, #00ff00);
+    animation: bar-glow-mil 2.5s ease-in-out infinite;
+  }
+  @keyframes bar-glow-edu  {
+    0%,100% { box-shadow: 0 0 4px #55ccff, 0 0 8px rgba(0,180,255,0.4); opacity:0.85; }
+    50%     { box-shadow: 0 0 12px #55ccff, 0 0 24px rgba(0,180,255,0.8); opacity:1; }
+  }
+  @keyframes bar-glow-boot {
+    0%,100% { box-shadow: 0 0 4px #ffcc44, 0 0 8px rgba(255,200,0,0.4); opacity:0.85; }
+    50%     { box-shadow: 0 0 12px #ffcc44, 0 0 24px rgba(255,200,0,0.8); opacity:1; }
+  }
+  @keyframes bar-glow-mil  {
+    0%,100% { box-shadow: 0 0 4px #00ff00, 0 0 8px rgba(0,255,0,0.4); opacity:0.85; }
+    50%     { box-shadow: 0 0 12px #00ff00, 0 0 24px rgba(0,255,0,0.8); opacity:1; }
+  }
+  .sk-bar-label {
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0.75;
+    letter-spacing: 0.04em;
+  }
+  .edu-card  .sk-bar-label { color: #55ccff; }
+  .boot-card .sk-bar-label { color: #ffcc44; }
+  .mil-card  .sk-bar-label { color: #00ff88; }
+
+  /* 시스템 상태 표시줄 */
+  .history-status {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid rgba(0,255,0,0.15);
+    background: rgba(0,255,0,0.04);
+  }
+  .hs-dot {
+    width: 7px; height: 7px;
+    background: #00ff00;
+    border-radius: 50%;
+    box-shadow: 0 0 7px #00ff00;
+    animation: hs-pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes hs-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .hs-text {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: rgba(0,255,0,0.7);
+    letter-spacing: 0.06em;
+  }
+  .hs-sep { color: rgba(0,255,0,0.3); font-size: 0.9rem; }
+
+  /* 글리치 애니메이션 */
+  @keyframes sk-glitch {
+    0%   { clip-path: inset(0 0 98% 0); transform: translate(-2px,0); }
+    20%  { clip-path: inset(30% 0 50% 0); transform: translate(2px,0); }
+    40%  { clip-path: inset(60% 0 20% 0); transform: translate(-1px,0); }
+    60%  { clip-path: inset(80% 0 5% 0);  transform: translate(1px,0); }
+    80%  { clip-path: inset(10% 0 80% 0); transform: translate(-2px,0); }
+    100% { clip-path: inset(0 0 98% 0);   transform: translate(0,0); }
+  }
+  /* 스캔 진행 */
+  @keyframes sk-scan-move {
+    0%   { top: -4px; opacity: 0.9; }
+    100% { top: 110%; opacity: 0; }
+  }
+
   .traits { border-top: 1px solid var(--border); padding-top: 1.5rem; }
   .traits-label {
     font-family: var(--font-mono);
@@ -504,10 +978,15 @@
     color: var(--neon);
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
     transition: background 0.2s, box-shadow 0.2s;
+    cursor: pointer;
   }
   .chip:hover {
-    background: rgba(0,255,0,0.15);
-    box-shadow: 0 0 10px var(--neon-glow);
+    background: rgba(0,255,0,0.18);
+    box-shadow: 0 0 14px var(--neon-glow);
+    transform: translateY(-2px);
+  }
+  @keyframes blink-txt {
+    0%,100%{opacity:1} 50%{opacity:0}
   }
 
   /* ── GAME START button ── */
@@ -617,21 +1096,73 @@
     /* ── 숫자 카운트업 ── */
     document.querySelectorAll('.stat-num').forEach((el, i) => {
       const end = parseInt(el.textContent);
+      el.textContent = '0';
       ScrollTrigger.create({
         trigger: el,
         start: 'top 90%',
         onEnter: () => {
-          gsap.from({ val: 0 }, {
+          const obj = { val: 0 };
+          gsap.to(obj, {
             val: end,
             duration: 1.0,
             delay: i * 0.08,
             ease: 'power2.out',
-            onUpdate() { el.textContent = Math.round(this.targets()[0].val); },
+            onUpdate: () => { el.textContent = Math.round(obj.val); },
           });
         },
         once: true,
       });
     });
+
+    /* ── PASSIVE SKILL CARDS JS ── */
+    (() => {
+      document.querySelectorAll('.sk-card').forEach((card, ci) => {
+        const scan  = card.querySelector('.sk-scan');
+        const lines = card.querySelectorAll('.sk-slot,.sk-codename,.sk-line,.sk-bar-label');
+
+        // 진입 시: 텍스트 숨김 → 스캔 레이저 → 텍스트 순차 등장
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 88%',
+          onEnter: () => {
+            gsap.set(lines, { opacity: 0 });
+            gsap.fromTo(scan,
+              { top: '-4px', opacity: 0.95 },
+              {
+                top: '110%', opacity: 0,
+                duration: 0.65, delay: ci * 0.12, ease: 'none',
+                onComplete: () => {
+                  gsap.to(lines, { opacity: 1, duration: 0.04, stagger: 0.05, ease: 'none' });
+                }
+              }
+            );
+          },
+          once: true,
+        });
+
+        // 호버: 스캔 레이저 재실행 + 카드 테두리 순간 플래시
+        card.addEventListener('mouseenter', () => {
+          gsap.fromTo(scan,
+            { top: '-4px', opacity: 0.9 },
+            { top: '110%', opacity: 0, duration: 0.4, ease: 'none' }
+          );
+          // 테두리 글로우 플래시
+          gsap.fromTo(card,
+            { filter: 'brightness(1.8)' },
+            { filter: 'brightness(1)', duration: 0.5, ease: 'power2.out' }
+          );
+        });
+      });
+
+      // 글리치 (코드네임 랜덤)
+      const codeNames = document.querySelectorAll('.sk-codename');
+      setInterval(() => {
+        const el = codeNames[Math.floor(Math.random() * codeNames.length)];
+        if (!el) return;
+        el.style.animation = 'sk-glitch 0.15s steps(1) forwards';
+        setTimeout(() => { el.style.animation = ''; }, 200);
+      }, 3500);
+    })();
 
     /* ── 픽셀 캐릭터 등장 ── */
     gsap.from('.pixel-char', {
@@ -674,4 +1205,123 @@
     });
 
   });
+
+  // ── 트레잇 칩 팝업 ─────────────────────────────────────
+  const TRAITS = {
+    gym: {
+      title: '💪 IRON PROTOCOL',
+      desc:  '헬스장이 제 두 번째 집입니다.\n근육 키우는 것도 코드 짜는 것도 결국 반복과 성장.',
+      // 이미지 경로: /images/trait-gym.jpg 로 업로드하면 자동 표시
+      img: '/images/trait-gym.jpg',
+      svgBg: `
+        <!-- 덤벨 픽셀아트 -->
+        <rect x="20" y="38" width="80" height="14" fill="#003300"/>
+        <rect x="10" y="30" width="20" height="30" fill="#004400"/>
+        <rect x="90" y="30" width="20" height="30" fill="#004400"/>
+        <rect x="14" y="26" width="12" height="8"  fill="#00ff00" opacity="0.5"/>
+        <rect x="14" y="56" width="12" height="8"  fill="#00ff00" opacity="0.5"/>
+        <rect x="94" y="26" width="12" height="8"  fill="#00ff00" opacity="0.5"/>
+        <rect x="94" y="56" width="12" height="8"  fill="#00ff00" opacity="0.5"/>
+        <rect x="46" y="42" width="28" height="6"  fill="#00cc00" opacity="0.4"/>
+        <text x="28" y="78" font-family="monospace" font-size="9" fill="#00ff00" opacity="0.6">WORKOUT_MODE.exe</text>
+      `,
+    },
+    soccer: {
+      title: '⚽ FIELD HACKER',
+      desc:  '피치 위에서도 전략과 포지셔닝.\n팀플레이는 협업 개발과 닮았습니다.',
+      img: '/images/trait-soccer.jpg',
+      svgBg: `
+        <!-- 축구공 픽셀아트 -->
+        <circle cx="60" cy="42" r="28" fill="#002200" stroke="#00ff00" stroke-width="1.5"/>
+        <rect x="53" y="22" width="14" height="8"  fill="#00ff00" opacity="0.6"/>
+        <rect x="36" y="34" width="8"  height="14" fill="#00ff00" opacity="0.6"/>
+        <rect x="76" y="34" width="8"  height="14" fill="#00ff00" opacity="0.6"/>
+        <rect x="42" y="54" width="10" height="8"  fill="#00ff00" opacity="0.6"/>
+        <rect x="68" y="54" width="10" height="8"  fill="#00ff00" opacity="0.6"/>
+        <rect x="58" y="30" width="4"  height="24" fill="#003300"/>
+        <rect x="48" y="40" width="24" height="4"  fill="#003300"/>
+        <text x="18" y="78" font-family="monospace" font-size="9" fill="#00ff00" opacity="0.6">TEAM_STRATEGY.run()</text>
+      `,
+    },
+    blog: {
+      title: '✍️ DEV LOGGER',
+      desc:  '배운 것을 글로 남기는 개발자.\n기록은 미래의 나에게 보내는 코드리뷰.',
+      img: '/images/trait-blog.jpg',
+      svgBg: `
+        <!-- 노트북/블로그 픽셀아트 -->
+        <rect x="20" y="20" width="80" height="52" fill="#001800" stroke="#00ff00" stroke-width="1.5"/>
+        <rect x="22" y="22" width="76" height="44" fill="#000e00"/>
+        <rect x="22" y="22" width="76" height="4"  fill="#003300"/>
+        <rect x="26" y="30" width="40" height="2"  fill="#00ff00" opacity="0.85"/>
+        <rect x="26" y="34" width="30" height="2"  fill="#00ff00" opacity="0.65"/>
+        <rect x="26" y="38" width="50" height="2"  fill="#00ff00" opacity="0.75"/>
+        <rect x="26" y="42" width="35" height="2"  fill="#00ff00" opacity="0.55"/>
+        <rect x="26" y="46" width="45" height="2"  fill="#00ff00" opacity="0.7"/>
+        <rect x="26" y="50" width="20" height="2"  fill="#00ff00" opacity="0.5"/>
+        <!-- 커서 깜박 -->
+        <rect x="48" y="50" width="6"  height="2"  fill="#00ff00"/>
+        <text x="22" y="78" font-family="monospace" font-size="9" fill="#00ff00" opacity="0.6">git push origin blog</text>
+      `,
+    },
+    jam: {
+      title: '🎮 JAM VETERAN',
+      desc:  '게임잼 참가 3회. 48시간 안에 세계를 만드는 경험.\n제약이 창의성을 폭발시킵니다.',
+      img: '/images/trait-jam.jpg',
+      svgBg: `
+        <!-- 게임패드 픽셀아트 -->
+        <rect x="22" y="28" width="76" height="40" rx="12" fill="#001800" stroke="#00ff00" stroke-width="1.5"/>
+        <rect x="30" y="35" width="14" height="4"  fill="#004400"/>
+        <rect x="36" y="29" width="4"  height="14" fill="#004400"/>
+        <rect x="76" y="33" width="6"  height="6"  fill="#00ff00" opacity="0.7"/>
+        <rect x="84" y="33" width="6"  height="6"  fill="#00ff00" opacity="0.4"/>
+        <rect x="80" y="29" width="6"  height="6"  fill="#00ff00" opacity="0.4"/>
+        <rect x="80" y="37" width="6"  height="6"  fill="#00ff00" opacity="0.4"/>
+        <rect x="54" y="43" width="12" height="10" rx="4" fill="#003300" stroke="#00cc00" stroke-width="1"/>
+        <text x="26" y="78" font-family="monospace" font-size="9" fill="#00ff00" opacity="0.6">JAM_COUNT: 3 WINS</text>
+      `,
+    },
+  };
+
+  const popup     = document.getElementById('trait-popup');
+  const popTitle  = document.getElementById('trait-title');
+  const popDesc   = document.getElementById('trait-desc');
+  const popImg    = document.getElementById('trait-img');
+  const popSvg    = document.getElementById('trait-placeholder');
+  const popClose  = document.getElementById('trait-close');
+
+  document.querySelectorAll('.chip[data-trait]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key  = chip.dataset.trait;
+      const data = TRAITS[key];
+      if (!data) return;
+
+      popTitle.textContent = data.title;
+      popDesc.textContent  = data.desc;
+
+      // 실제 이미지 시도
+      popImg.style.display = 'none';
+      popSvg.style.display = 'block';
+      popSvg.innerHTML = `<rect x="0" y="0" width="120" height="90" fill="#020a02"/>${data.svgBg}`;
+
+      const img = new Image();
+      img.onload = () => {
+        popImg.src = data.img;
+        popImg.style.display = 'block';
+        popSvg.style.display = 'none';
+      };
+      img.onerror = () => { /* SVG 유지 */ };
+      img.src = data.img;
+
+      popup.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closePopup() {
+    popup.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  popClose.addEventListener('click', closePopup);
+  popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
 </script>

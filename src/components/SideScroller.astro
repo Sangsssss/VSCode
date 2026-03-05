@@ -11,80 +11,401 @@
 
     <!-- ── 배경 레이어 1: 별/성운 (가장 멀리, 가장 느리게) ── -->
     <div class="layer layer-sky" id="layer-sky">
-      <!-- 별 SVG 패턴 -->
       <svg class="stars" viewBox="0 0 1600 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        {Array.from({length: 80}).map((_, i) => {
-          const x = (i * 197 + 13) % 1600;
-          const y = (i * 83  + 47) % 300;
-          const r = i % 3 === 0 ? 2 : 1;
-          const op = 0.3 + (i % 5) * 0.12;
-          return <circle cx={x} cy={y} r={r} fill="#00ff00" opacity={op}/>;
-        })}
-        <!-- 성운 blob -->
-        <ellipse cx="300"  cy="120" rx="180" ry="60" fill="rgba(0,255,0,0.03)"/>
-        <ellipse cx="900"  cy="80"  rx="240" ry="80" fill="rgba(0,200,0,0.04)"/>
-        <ellipse cx="1400" cy="150" rx="200" ry="70" fill="rgba(0,255,0,0.03)"/>
-      </svg>
+        <defs>
+          <radialGradient id="planetGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#003300"/>
+            <stop offset="50%"  stop-color="#001a00"/>
+            <stop offset="100%" stop-color="#000800"/>
+          </radialGradient>
+          <filter id="sglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
 
-      <!-- 원거리 산 실루엣 -->
-      <svg class="mountains-far" viewBox="0 0 1600 200" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,200 L0,140 L80,80 L160,130 L280,40 L400,110 L520,60 L640,120 L760,30 L880,100 L1000,50 L1120,120 L1240,45 L1360,105 L1480,70 L1600,130 L1600,200 Z"
-              fill="#0d1a0d" opacity="0.9"/>
+        <!-- 검은 하늘 -->
+        <rect x="0" y="0" width="1600" height="400" fill="#000500"/>
+
+        <!-- 십자형 별들 (레퍼런스의 + 모양) -->
+        {[
+          {x:40,  y:30,  s:6}, {x:120, y:80,  s:4}, {x:200, y:20,  s:5},
+          {x:310, y:60,  s:3}, {x:380, y:100, s:6}, {x:450, y:35,  s:4},
+          {x:520, y:75,  s:5}, {x:600, y:15,  s:3}, {x:650, y:90,  s:6},
+          {x:750, y:50,  s:4}, {x:820, y:110, s:5}, {x:880, y:25,  s:3},
+          {x:50,  y:150, s:4}, {x:160, y:170, s:5}, {x:250, y:130, s:3},
+          {x:340, y:190, s:6}, {x:420, y:145, s:4}, {x:490, y:200, s:3},
+        ].map(({x,y,s}) => (
+          <g filter="url(#sglow)">
+            <rect x={x-s/2} y={y-1}   width={s}   height={2}   fill="#00ff00" opacity="0.9"/>
+            <rect x={x-1}   y={y-s/2} width={2}   height={s}   fill="#00ff00" opacity="0.9"/>
+            <rect x={x-1}   y={y-1}   width={2}   height={2}   fill="#aaffaa"/>
+          </g>
+        ))}
+
+        <!-- 작은 점 별들 -->
+        {Array.from({length:80}).map((_,i)=>{
+          const x=(i*197+23)%1600, y=(i*83+17)%220;
+          return <rect x={x} y={y} width="1" height="1" fill="#00ff00" opacity={0.2+(i%5)*0.1}/>;
+        })}
+
+        <!-- ══ Unity 행성 (중앙 왼쪽, 크게) ══ -->
+        <circle cx="700"  cy="105" r="115" fill="rgba(0,50,0,0.2)"/>
+        <circle cx="700"  cy="105" r="95"  fill="rgba(0,35,0,0.3)"/>
+        <circle cx="700"  cy="105" r="82"  fill="url(#planetGrad)"/>
+        <circle cx="700"  cy="105" r="82"  fill="none" stroke="#00ff00" stroke-width="2"/>
+        {[-40,-20,0,20,40].map(dy=>(
+          <path d={`M${700-Math.sqrt(82*82-dy*dy)},${105+dy} A82,82,0,0,1,${700+Math.sqrt(82*82-dy*dy)},${105+dy}`}
+                fill="none" stroke="rgba(0,255,0,0.1)" stroke-width="1"/>
+        ))}
+        {Array.from({length:17}).map((_,i)=>(
+          <rect x="618" y={23+i*11} width="164" height="1" fill="rgba(0,0,0,0.28)"/>
+        ))}
+        <!-- Unity 텍스트 -->
+        <text x="638" y="120" font-family="monospace" font-size="40" font-weight="bold"
+              fill="none" stroke="#00ff00" stroke-width="2" filter="url(#sglow)">Unity</text>
+        <text x="638" y="120" font-family="monospace" font-size="40" font-weight="bold"
+              fill="#00ee00">Unity</text>
+
+        <!-- ══ C# 행성 (오른쪽, 중간 크기) ══ -->
+        <circle cx="1320" cy="90"  r="90"  fill="rgba(0,45,0,0.2)"/>
+        <circle cx="1320" cy="90"  r="72"  fill="rgba(0,30,0,0.3)"/>
+        <circle cx="1320" cy="90"  r="62"  fill="url(#planetGrad)"/>
+        <circle cx="1320" cy="90"  r="62"  fill="none" stroke="#00cc00" stroke-width="1.5"/>
+        {[-30,-12,8,26].map(dy=>(
+          <path d={`M${1320-Math.sqrt(Math.max(0,62*62-dy*dy))},${90+dy} A62,62,0,0,1,${1320+Math.sqrt(Math.max(0,62*62-dy*dy))},${90+dy}`}
+                fill="none" stroke="rgba(0,255,0,0.1)" stroke-width="1"/>
+        ))}
+        {Array.from({length:13}).map((_,i)=>(
+          <rect x="1258" y={28+i*10} width="124" height="1" fill="rgba(0,0,0,0.28)"/>
+        ))}
+        <!-- C# 텍스트 -->
+        <text x="1278" y="104" font-family="monospace" font-size="40" font-weight="bold"
+              fill="none" stroke="#00cc00" stroke-width="2" filter="url(#sglow)">C#</text>
+        <text x="1278" y="104" font-family="monospace" font-size="40" font-weight="bold"
+              fill="#00cc00">C#</text>
+
+        <!-- ══ 코드 폭포 (C# 알고리즘) ══ -->
+        <rect x="370" y="0" width="80" height="400" fill="rgba(0,255,0,0.04)"/>
+        <rect x="388" y="0" width="44" height="400" fill="rgba(0,255,0,0.055)"/>
+        <rect x="398" y="0" width="22" height="400" fill="rgba(0,255,0,0.045)"/>
+        {[
+          {y:8,   t:'using UnityEngine;'},
+          {y:22,  t:'public class Player {'},
+          {y:36,  t:'  void Update() {'},
+          {y:50,  t:'    if (Input.GetKey('},
+          {y:64,  t:'      rb.AddForce('},
+          {y:78,  t:'      Vector3.up));'},
+          {y:92,  t:'    }'},
+          {y:106, t:'  }'},
+          {y:120, t:'  IEnumerator Fade() {'},
+          {y:134, t:'    float t = 0f;'},
+          {y:148, t:'    while (t < 1f) {'},
+          {y:162, t:'      t += Time.dt;'},
+          {y:176, t:'      yield return null;'},
+          {y:190, t:'    }'},
+          {y:204, t:'  }'},
+          {y:218, t:'  int[] BubbleSort('},
+          {y:232, t:'    int[] arr) {'},
+          {y:246, t:'    for(int i=0;'},
+          {y:260, t:'      i<arr.Length;i++)'},
+          {y:274, t:'      for(int j=0;'},
+          {y:288, t:'        j<arr.Length'},
+          {y:302, t:'          -i-1;j++)'},
+          {y:316, t:'        if(arr[j]>'},
+          {y:330, t:'          arr[j+1])'},
+          {y:344, t:'          Swap(arr,j);'},
+          {y:358, t:'    return arr; }'},
+          {y:372, t:'}'},
+          {y:386, t:'// EOF'},
+        ].map(({y,t})=>(
+          <text x="375" y={y} font-family="monospace" font-size="10.5" fill="#00ff00" opacity="0.78">{t}</text>
+        ))}
       </svg>
     </div>
 
     <!-- ── 배경 레이어 2: 중경 도시 빌딩 (중간 속도) ── -->
     <div class="layer layer-mid" id="layer-mid">
       <svg class="buildings" viewBox="0 0 2400 300" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-        <!-- 빌딩들 -->
+        <defs>
+          <filter id="ng"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="ng2"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+
+        <!-- ══ 빌딩들 (와이어프레임 + 회로 외벽) ══ -->
         {[
-          {x:0,   w:60,  h:180}, {x:70,  w:40,  h:220}, {x:120, w:80,  h:150},
-          {x:210, w:50,  h:260}, {x:270, w:70,  h:190}, {x:350, w:45,  h:240},
-          {x:405, w:90,  h:160}, {x:505, w:55,  h:280}, {x:570, w:65,  h:200},
-          {x:645, w:40,  h:170}, {x:695, w:85,  h:250}, {x:790, w:50,  h:130},
-          {x:850, w:75,  h:270}, {x:935, w:45,  h:190}, {x:990, w:60,  h:220},
-          {x:1060,w:80,  h:160}, {x:1150,w:55,  h:300}, {x:1215,w:70,  h:180},
-          {x:1295,w:50,  h:240}, {x:1355,w:90,  h:140}, {x:1455,w:60,  h:260},
-          {x:1525,w:45,  h:200}, {x:1580,w:75,  h:170}, {x:1665,w:55,  h:290},
-          {x:1730,w:80,  h:150}, {x:1820,w:50,  h:230}, {x:1880,w:65,  h:180},
-          {x:1955,w:70,  h:260}, {x:2035,w:45,  h:140}, {x:2090,w:90,  h:220},
-          {x:2190,w:55,  h:190}, {x:2255,w:60,  h:270}, {x:2325,w:65,  h:160},
+          {x:0,   w:55,  h:170, ww:[[8,20,10,14],[28,20,10,14],[8,50,10,14],[28,50,10,14],[8,80,10,14],[28,80,10,14],[8,110,10,14],[28,110,10,14]]},
+          {x:65,  w:35,  h:210, ww:[[6,15,8,12],[6,40,8,12],[6,65,8,12],[6,90,8,12],[6,115,8,12],[6,140,8,12],[6,165,8,12]]},
+          {x:110, w:70,  h:145, ww:[[8,15,12,16],[30,15,12,16],[52,15,12,16],[8,45,12,16],[30,45,12,16],[52,45,12,16],[8,75,12,16],[30,75,12,16],[52,75,12,16]]},
+          {x:190, w:45,  h:255, ww:[[6,10,10,14],[24,10,10,14],[6,35,10,14],[24,35,10,14],[6,60,10,14],[24,60,10,14],[6,85,10,14],[24,85,10,14],[6,110,10,14],[24,110,10,14],[6,135,10,14],[24,135,10,14],[6,160,10,14],[24,160,10,14],[6,185,10,14]]},
+          {x:245, w:60,  h:185, ww:[[8,15,10,14],[28,15,10,14],[8,42,10,14],[28,42,10,14],[8,69,10,14],[28,69,10,14],[8,96,10,14],[28,96,10,14],[8,123,10,14],[28,123,10,14]]},
+          {x:315, w:40,  h:235, ww:[[6,12,9,13],[6,36,9,13],[6,60,9,13],[6,84,9,13],[6,108,9,13],[6,132,9,13],[6,156,9,13],[6,180,9,13]]},
+          {x:365, w:80,  h:155, ww:[[8,12,14,16],[32,12,14,16],[56,12,14,16],[8,40,14,16],[32,40,14,16],[56,40,14,16],[8,68,14,16],[32,68,14,16],[56,68,14,16]]},
+          {x:455, w:50,  h:275, ww:[[6,10,10,14],[24,10,10,14],[6,34,10,14],[24,34,10,14],[6,58,10,14],[24,58,10,14],[6,82,10,14],[24,82,10,14],[6,106,10,14],[24,106,10,14],[6,130,10,14],[24,130,10,14],[6,154,10,14],[6,178,10,14],[6,202,10,14]]},
+          {x:515, w:60,  h:195, ww:[[8,15,11,15],[28,15,11,15],[8,42,11,15],[28,42,11,15],[8,69,11,15],[28,69,11,15],[8,96,11,15],[28,96,11,15],[8,123,11,15]]},
+          {x:585, w:38,  h:168, ww:[[5,12,9,13],[5,36,9,13],[5,60,9,13],[5,84,9,13],[5,108,9,13],[5,132,9,13]]},
+          {x:635, w:80,  h:245, ww:[[8,10,13,16],[30,10,13,16],[55,10,13,16],[8,36,13,16],[30,36,13,16],[55,36,13,16],[8,62,13,16],[30,62,13,16],[55,62,13,16],[8,88,13,16],[30,88,13,16],[55,88,13,16],[8,114,13,16],[30,114,13,16],[55,114,13,16]]},
+          {x:725, w:45,  h:125, ww:[[6,12,10,14],[24,12,10,14],[6,38,10,14],[24,38,10,14],[6,64,10,14],[24,64,10,14]]},
+          {x:780, w:70,  h:265, ww:[[8,10,12,15],[30,10,12,15],[52,10,12,15],[8,35,12,15],[30,35,12,15],[52,35,12,15],[8,60,12,15],[30,60,12,15],[52,60,12,15],[8,85,12,15],[30,85,12,15],[8,110,12,15],[30,110,12,15],[8,135,12,15],[30,135,12,15],[8,160,12,15],[8,185,12,15]]},
+          {x:860, w:42,  h:185, ww:[[6,12,9,13],[6,36,9,13],[6,60,9,13],[6,84,9,13],[6,108,9,13],[6,132,9,13],[6,156,9,13]]},
+          {x:912, w:55,  h:215, ww:[[7,12,10,14],[26,12,10,14],[7,36,10,14],[26,36,10,14],[7,60,10,14],[26,60,10,14],[7,84,10,14],[26,84,10,14],[7,108,10,14],[26,108,10,14],[7,132,10,14],[26,132,10,14],[7,156,10,14],[26,156,10,14]]},
+          {x:977, w:75,  h:155, ww:[[8,12,12,15],[30,12,12,15],[54,12,12,15],[8,38,12,15],[30,38,12,15],[54,38,12,15],[8,64,12,15],[30,64,12,15],[54,64,12,15]]},
+          {x:1062,w:50,  h:295, ww:[[6,8,10,14],[24,8,10,14],[6,32,10,14],[24,32,10,14],[6,56,10,14],[24,56,10,14],[6,80,10,14],[24,80,10,14],[6,104,10,14],[24,104,10,14],[6,128,10,14],[24,128,10,14],[6,152,10,14],[6,176,10,14],[6,200,10,14],[6,224,10,14]]},
+          {x:1122,w:65,  h:175, ww:[[8,12,11,14],[28,12,11,14],[8,38,11,14],[28,38,11,14],[8,64,11,14],[28,64,11,14],[8,90,11,14],[28,90,11,14],[8,116,11,14],[28,116,11,14]]},
+          {x:1197,w:48,  h:235, ww:[[6,10,9,13],[6,34,9,13],[6,58,9,13],[6,82,9,13],[6,106,9,13],[6,130,9,13],[6,154,9,13],[6,178,9,13],[6,202,9,13]]},
+          {x:1255,w:85,  h:135, ww:[[8,12,14,16],[32,12,14,16],[58,12,14,16],[8,40,14,16],[32,40,14,16],[58,40,14,16],[8,68,14,16],[32,68,14,16],[58,68,14,16]]},
+          {x:1350,w:55,  h:255, ww:[[7,10,10,14],[26,10,10,14],[7,34,10,14],[26,34,10,14],[7,58,10,14],[26,58,10,14],[7,82,10,14],[26,82,10,14],[7,106,10,14],[26,106,10,14],[7,130,10,14],[26,130,10,14],[7,154,10,14],[26,154,10,14]]},
+          {x:1415,w:42,  h:195, ww:[[5,12,8,12],[5,36,8,12],[5,60,8,12],[5,84,8,12],[5,108,8,12],[5,132,8,12],[5,156,8,12]]},
+          {x:1467,w:70,  h:165, ww:[[8,12,12,15],[30,12,12,15],[8,38,12,15],[30,38,12,15],[8,64,12,15],[30,64,12,15],[8,90,12,15],[30,90,12,15]]},
+          {x:1547,w:38,  h:285, ww:[[5,8,8,12],[5,30,8,12],[5,52,8,12],[5,74,8,12],[5,96,8,12],[5,118,8,12],[5,140,8,12],[5,162,8,12],[5,184,8,12],[5,206,8,12],[5,228,8,12],[5,250,8,12]]},
+          {x:1595,w:68,  h:185, ww:[[8,12,11,14],[28,12,11,14],[8,38,11,14],[28,38,11,14],[8,64,11,14],[28,64,11,14],[8,90,11,14],[28,90,11,14],[8,116,11,14]]},
+          {x:1673,w:52,  h:145, ww:[[7,12,10,13],[7,36,10,13],[7,60,10,13],[7,84,10,13],[7,108,10,13]]},
+          {x:1735,w:75,  h:225, ww:[[8,10,13,16],[30,10,13,16],[54,10,13,16],[8,36,13,16],[30,36,13,16],[54,36,13,16],[8,62,13,16],[30,62,13,16],[54,62,13,16],[8,88,13,16],[30,88,13,16],[54,88,13,16],[8,114,13,16],[30,114,13,16]]},
+          {x:1820,w:45,  h:165, ww:[[6,12,9,13],[24,12,9,13],[6,36,9,13],[24,36,9,13],[6,60,9,13],[24,60,9,13],[6,84,9,13],[24,84,9,13],[6,108,9,13],[24,108,9,13]]},
+          {x:1875,w:62,  h:245, ww:[[8,10,11,14],[28,10,11,14],[8,34,11,14],[28,34,11,14],[8,58,11,14],[28,58,11,14],[8,82,11,14],[28,82,11,14],[8,106,11,14],[28,106,11,14],[8,130,11,14],[28,130,11,14],[8,154,11,14],[28,154,11,14],[8,178,11,14]]},
+          {x:1947,w:48,  h:135, ww:[[6,12,9,13],[6,36,9,13],[6,60,9,13],[6,84,9,13],[6,108,9,13]]},
+          {x:2005,w:85,  h:215, ww:[[8,10,14,16],[32,10,14,16],[58,10,14,16],[8,36,14,16],[32,36,14,16],[58,36,14,16],[8,62,14,16],[32,62,14,16],[58,62,14,16],[8,88,14,16],[32,88,14,16],[58,88,14,16],[8,114,14,16],[32,114,14,16]]},
+          {x:2100,w:52,  h:185, ww:[[7,12,10,13],[7,36,10,13],[7,60,10,13],[7,84,10,13],[7,108,10,13],[7,132,10,13],[7,156,10,13]]},
+          {x:2162,w:58,  h:265, ww:[[7,10,10,14],[28,10,10,14],[7,34,10,14],[28,34,10,14],[7,58,10,14],[28,58,10,14],[7,82,10,14],[28,82,10,14],[7,106,10,14],[28,106,10,14],[7,130,10,14],[28,130,10,14],[7,154,10,14],[28,154,10,14],[7,178,10,14],[28,178,10,14]]},
+          {x:2230,w:40,  h:155, ww:[[5,12,8,12],[5,36,8,12],[5,60,8,12],[5,84,8,12],[5,108,8,12]]},
+          {x:2280,w:72,  h:240, ww:[[8,10,12,15],[30,10,12,15],[52,10,12,15],[8,35,12,15],[30,35,12,15],[52,35,12,15],[8,60,12,15],[30,60,12,15],[52,60,12,15],[8,85,12,15],[30,85,12,15],[8,110,12,15],[30,110,12,15],[8,135,12,15],[30,135,12,15],[8,160,12,15]]},
+          {x:2362,w:38,  h:175, ww:[[5,12,8,12],[5,36,8,12],[5,60,8,12],[5,84,8,12],[5,108,8,12],[5,132,8,12]]},
         ].map(b => (
           <g>
-            <rect x={b.x} y={300-b.h} width={b.w} height={b.h} fill="#0a1a0a" stroke="rgba(0,255,0,0.15)" stroke-width="1"/>
-            <!-- 창문 -->
-            {Array.from({length: Math.floor(b.h/30)}).map((_, row) =>
-              Array.from({length: Math.floor(b.w/20)}).map((_, col) => (
-                <rect
-                  x={b.x + 5 + col*18}
-                  y={300 - b.h + 8 + row*28}
-                  width="8" height="12"
-                  fill={ (row + col + b.x) % 3 === 0 ? 'rgba(0,255,0,0.6)' : 'rgba(0,255,0,0.08)' }
-                />
-              ))
+            <!-- 빌딩 본체 (어두운 검정) -->
+            <rect x={b.x} y={300-b.h} width={b.w} height={b.h} fill="#020a02"/>
+            <!-- 와이어프레임 외곽선 -->
+            <rect x={b.x} y={300-b.h} width={b.w} height={b.h}
+                  fill="none" stroke="#00ff00" stroke-width="1.2"/>
+            <!-- 회로기판 수직선들 -->
+            {Array.from({length:Math.floor(b.w/14)}).map((_,i)=>(
+              <line x1={b.x+7+i*14} y1={300-b.h+4} x2={b.x+7+i*14} y2={296}
+                    stroke="rgba(0,255,0,0.18)" stroke-width="0.8"/>
+            ))}
+            <!-- 회로기판 수평 가지들 -->
+            {Array.from({length:Math.floor(b.h/25)}).map((_,i)=>(
+              <line x1={b.x+2} y1={300-b.h+12+i*25} x2={b.x+b.w-2} y2={300-b.h+12+i*25}
+                    stroke="rgba(0,255,0,0.12)" stroke-width="0.8"/>
+            ))}
+            <!-- 회로 노드 (교차점 점) -->
+            {Array.from({length:Math.floor(b.w/14)}).map((_,ci)=>
+              Array.from({length:Math.floor(b.h/25)}).map((_,ri)=>
+                (ci+ri)%3===0
+                  ? <rect x={b.x+6+ci*14} y={300-b.h+11+ri*25} width="3" height="3" fill="rgba(0,255,0,0.4)"/>
+                  : null
+              )
             )}
+            <!-- 창문들 -->
+            {b.ww.map(([wx,wy,ww,wh])=>(
+              <rect x={b.x+wx} y={300-b.h+wy} width={ww} height={wh}
+                    fill={(wx+wy+b.x)%5===0 ? '#00ff00' : (wx+wy+b.x)%5===1 ? 'rgba(0,255,0,0.5)' : (wx+wy+b.x)%5===2 ? 'rgba(0,255,0,0.2)' : 'rgba(0,255,0,0.07)'}/>
+            ))}
           </g>
         ))}
+
+        <!-- ══ 빌딩 사이 회로선 연결 ══ -->
+        <line x1="55"  y1="250" x2="65"  y2="250" stroke="#00ff00" stroke-width="1" opacity="0.5"/>
+        <line x1="180" y1="180" x2="190" y2="180" stroke="#00ff00" stroke-width="1" opacity="0.5"/>
+        <line x1="725" y1="220" x2="780" y2="220" stroke="#00ff00" stroke-width="1" opacity="0.5"/>
+        <line x1="970" y1="190" x2="977" y2="190" stroke="#00ff00" stroke-width="1" opacity="0.5"/>
+        <line x1="1245" y1="200" x2="1255" y2="200" stroke="#00ff00" stroke-width="1" opacity="0.5"/>
+
+        <!-- ══ <> 코드 태그 장식 (빌딩 사이) ══ -->
+        <g filter="url(#ng2)">
+          <rect x="700" y="200" width="40" height="18" fill="#001a00" stroke="#00ff00" stroke-width="1"/>
+          <text x="706" y="213" font-family="monospace" font-size="10" fill="#00ff00">&lt;&gt;</text>
+        </g>
+        <g filter="url(#ng2)">
+          <rect x="970" y="180" width="55" height="18" fill="#001a00" stroke="#00ff00" stroke-width="1"/>
+          <text x="976" y="193" font-family="monospace" font-size="10" fill="#00ff00">&lt;...&gt;</text>
+        </g>
+        <g filter="url(#ng2)">
+          <rect x="1240" y="195" width="40" height="18" fill="#001a00" stroke="#00ff00" stroke-width="1"/>
+          <text x="1246" y="208" font-family="monospace" font-size="10" fill="#00ff00">&lt;&gt;</text>
+        </g>
+        <g filter="url(#ng2)">
+          <rect x="1820" y="175" width="55" height="18" fill="#001a00" stroke="#00ff00" stroke-width="1"/>
+          <text x="1826" y="188" font-family="monospace" font-size="10" fill="#00ff00">&lt;...&gt;</text>
+        </g>
+        <g filter="url(#ng2)">
+          <rect x="2160" y="188" width="40" height="18" fill="#001a00" stroke="#00ff00" stroke-width="1"/>
+          <text x="2166" y="201" font-family="monospace" font-size="10" fill="#00ff00">&lt;&gt;</text>
+        </g>
+
+        <!-- ══ 네온 간판들 ══ -->
+        <!-- DEV-ZONE (가장 크고 밝게) -->
+        <g filter="url(#ng)" transform="translate(850, 115)">
+          <rect x="0" y="0" width="140" height="30" fill="#001800" stroke="#00ff00" stroke-width="2"/>
+          <rect x="3" y="3" width="134" height="24" fill="none" stroke="rgba(0,255,0,0.3)" stroke-width="1"/>
+          <text x="8" y="22" font-family="monospace" font-size="16" font-weight="bold" fill="#00ff00">DEV-ZONE</text>
+          <!-- 간판 기둥 -->
+          <rect x="60" y="30" width="4" height="15" fill="#00cc00"/>
+          <rect x="76" y="30" width="4" height="15" fill="#00cc00"/>
+        </g>
+
+        <!-- SYS://ONLINE -->
+        <g filter="url(#ng2)" transform="translate(300, 130)">
+          <rect x="0" y="0" width="115" height="22" fill="#001800" stroke="#00cc00" stroke-width="1.5"/>
+          <text x="5" y="15" font-family="monospace" font-size="11" fill="#00cc00">SYS://ONLINE</text>
+        </g>
+
+        <!-- HACK_THE_PLANET -->
+        <g filter="url(#ng2)" transform="translate(1450, 120)">
+          <rect x="0" y="0" width="136" height="22" fill="#001800" stroke="#00aa00" stroke-width="1.5"/>
+          <text x="5" y="15" font-family="monospace" font-size="11" fill="#00aa00">HACK_THE_PLANET</text>
+        </g>
+
+        <!-- BUILD && DEPLOY -->
+        <g filter="url(#ng2)" transform="translate(1970, 130)">
+          <rect x="0" y="0" width="118" height="22" fill="#001800" stroke="#00cc00" stroke-width="1.5"/>
+          <text x="5" y="15" font-family="monospace" font-size="11" fill="#00cc00">BUILD &amp;&amp; DEPLOY</text>
+        </g>
+
+        <!-- while(alive){} -->
+        <g filter="url(#ng2)" transform="translate(550, 140)">
+          <rect x="0" y="0" width="100" height="22" fill="#001800" stroke="#009900" stroke-width="1"/>
+          <text x="5" y="15" font-family="monospace" font-size="10" fill="#009900">while(alive){}</text>
+        </g>
+
       </svg>
     </div>
 
     <!-- ── 배경 레이어 3: 바닥 + 근경 (가장 빠르게) ── -->
     <div class="layer layer-ground" id="layer-ground">
-      <!-- 바닥 플랫폼 -->
-      <svg class="ground-svg" viewBox="0 0 5500 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- 바닥 라인 -->
-        <rect x="0" y="0" width="5500" height="60" fill="#0a1a0a"/>
-        <rect x="0" y="0" width="5500" height="2"  fill="#00ff00" opacity="0.9"/>
-        <!-- 바닥 픽셀 패턴 -->
-        {Array.from({length: 275}).map((_, i) => (
-          <rect x={i*20} y="2" width="18" height="4" fill="rgba(0,255,0,0.12)"/>
+      <svg class="ground-svg" viewBox="0 0 5500 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 바닥 배경 -->
+        <rect x="0" y="0" width="5500" height="80" fill="#020a02"/>
+
+        <!-- 레퍼런스: 두꺼운 초록 바닥 라인 -->
+        <rect x="0" y="0" width="5500" height="5"  fill="#00ff00"/>
+        <rect x="0" y="5" width="5500" height="3"  fill="rgba(0,255,0,0.6)"/>
+        <rect x="0" y="8" width="5500" height="2"  fill="rgba(0,255,0,0.3)"/>
+
+        <!-- 도로면 (바닥 아래) 회로기판 패턴 -->
+        <!-- 수평 메인 회로선 -->
+        <rect x="0"   y="20" width="5500" height="1" fill="rgba(0,255,0,0.25)"/>
+        <rect x="0"   y="35" width="5500" height="1" fill="rgba(0,255,0,0.18)"/>
+        <rect x="0"   y="50" width="5500" height="1" fill="rgba(0,255,0,0.15)"/>
+        <rect x="0"   y="65" width="5500" height="1" fill="rgba(0,255,0,0.12)"/>
+
+        <!-- 수직 회로선들 (불규칙) -->
+        {[80,200,340,480,620,760,900,1060,1200,1340,1490,1640,1780,1920,2070,2220,2370,2520,2670,2820,2980,3130,3280,3440,3600,3760,3920,4080,4240,4400,4560,4720,4880,5040,5200,5360].map(x=>(
+          <rect x={x} y="0" width="1" height="80" fill="rgba(0,255,0,0.15)"/>
         ))}
-        <!-- 가로등 -->
-        {[120,380,640,900,1160,1420,1680,1940,2200,2460,2720,2980,3240,3500,3760,4020,4280,4540,4800,5060,5300].map(x => (
+
+        <!-- 회로 노드 교차점 -->
+        {[80,340,620,900,1200,1490,1780,2070,2370,2670,2980,3280,3600,3920,4240,4560,4880,5200].map(x=>
+          [20,35,50,65].map(y=>(
+            <rect x={x-2} y={y-2} width="5" height="5" fill="rgba(0,255,0,0.35)"/>
+          ))
+        )}
+
+        <!-- 좌우 회로 박스들 (레퍼런스 하단) -->
+        {[120,420,720,1020,1320,1620,1920,2220,2520,2820,3120,3420,3720,4020,4320,4620,4920].map((x,i)=>(
           <g>
-            <rect x={x}   y="0"  width="3"  height="20" fill="rgba(0,255,0,0.5)"/>
-            <rect x={x-8} y="-16" width="20" height="4"  fill="rgba(0,255,0,0.4)"/>
-            <rect x={x-4} y="-12" width="4"  height="4"  fill="#00ff00" opacity="0.9"/>
+            <rect x={x}    y="22" width="60" height="40" fill="none" stroke="rgba(0,255,0,0.3)" stroke-width="1"/>
+            <rect x={x+4}  y="26" width="12" height="8"  fill="rgba(0,255,0,0.15)"/>
+            <rect x={x+20} y="26" width="12" height="8"  fill="rgba(0,255,0,0.1)"/>
+            <rect x={x+36} y="26" width="12" height="8"  fill="rgba(0,255,0,0.15)"/>
+            <rect x={x+4}  y="38" width="8"  height="6"  fill="rgba(0,255,0,0.1)"/>
+            <rect x={x+16} y="38" width="30" height="6"  fill="rgba(0,255,0,0.08)"/>
+          </g>
+        ))}
+
+        <!-- ══ 픽셀 바이크들 (레퍼런스 근경) ══ -->
+        <!-- 바이크 1 (x=520) — 상세한 픽셀아트 -->
+        <g transform="translate(520,-38)">
+          <!-- 뒷바퀴 -->
+          <rect x="0"  y="22" width="28" height="28" rx="14" fill="none" stroke="#00ff00" stroke-width="2"/>
+          <rect x="11" y="33" width="6"  height="6"  fill="#00ff00"/>
+          <rect x="13" y="22" width="2"  height="28" fill="rgba(0,255,0,0.3)"/>
+          <rect x="0"  y="35" width="28" height="2"  fill="rgba(0,255,0,0.3)"/>
+          <!-- 앞바퀴 -->
+          <rect x="68" y="22" width="28" height="28" rx="14" fill="none" stroke="#00ff00" stroke-width="2"/>
+          <rect x="79" y="33" width="6"  height="6"  fill="#00ff00"/>
+          <rect x="81" y="22" width="2"  height="28" fill="rgba(0,255,0,0.3)"/>
+          <rect x="68" y="35" width="28" height="2"  fill="rgba(0,255,0,0.3)"/>
+          <!-- 프레임 메인 -->
+          <rect x="14" y="32" width="68" height="6"  fill="#009900"/>
+          <!-- 엔진 블록 -->
+          <rect x="28" y="18" width="36" height="20" fill="#004400"/>
+          <rect x="30" y="20" width="32" height="16" fill="#003300"/>
+          <rect x="34" y="22" width="24" height="12" fill="#002200"/>
+          <!-- 엔진 디테일 -->
+          <rect x="36" y="24" width="8"  height="4"  fill="rgba(0,255,0,0.3)"/>
+          <rect x="48" y="24" width="8"  height="4"  fill="rgba(0,255,0,0.25)"/>
+          <!-- 시트 -->
+          <rect x="30" y="12" width="30" height="8"  fill="#006600"/>
+          <rect x="32" y="13" width="26" height="6"  fill="#005500"/>
+          <!-- 핸들 -->
+          <rect x="72" y="6"  width="16" height="4"  fill="#009900"/>
+          <rect x="82" y="6"  width="4"  height="14" fill="#009900"/>
+          <!-- 헤드라이트 -->
+          <rect x="92" y="24" width="6"  height="8"  fill="#001800"/>
+          <rect x="94" y="25" width="4"  height="6"  fill="rgba(0,255,0,0.5)"/>
+          <!-- 배기관 -->
+          <rect x="2"  y="38" width="16" height="4"  fill="#008800"/>
+          <!-- 배기 이펙트 -->
+          <rect x="-10" y="38" width="12" height="3" fill="rgba(0,255,0,0.4)"/>
+          <rect x="-18" y="39" width="8"  height="2" fill="rgba(0,255,0,0.25)"/>
+          <rect x="-24" y="39" width="6"  height="1" fill="rgba(0,255,0,0.12)"/>
+          <!-- 바이크 글로우 -->
+          <rect x="10" y="10" width="80" height="44" fill="rgba(0,255,0,0.03)" rx="4"/>
+        </g>
+
+        <!-- 바이크 2 (x=1950) -->
+        <g transform="translate(1950,-38)">
+          <rect x="0"  y="22" width="28" height="28" rx="14" fill="none" stroke="#00ff00" stroke-width="2"/>
+          <rect x="11" y="33" width="6"  height="6"  fill="#00ff00"/>
+          <rect x="13" y="22" width="2"  height="28" fill="rgba(0,255,0,0.3)"/>
+          <rect x="0"  y="35" width="28" height="2"  fill="rgba(0,255,0,0.3)"/>
+          <rect x="68" y="22" width="28" height="28" rx="14" fill="none" stroke="#00ff00" stroke-width="2"/>
+          <rect x="79" y="33" width="6"  height="6"  fill="#00ff00"/>
+          <rect x="81" y="22" width="2"  height="28" fill="rgba(0,255,0,0.3)"/>
+          <rect x="68" y="35" width="28" height="2"  fill="rgba(0,255,0,0.3)"/>
+          <rect x="14" y="32" width="68" height="6"  fill="#00aa00"/>
+          <rect x="28" y="18" width="36" height="20" fill="#004400"/>
+          <rect x="30" y="20" width="32" height="16" fill="#003300"/>
+          <rect x="34" y="22" width="24" height="12" fill="#002200"/>
+          <rect x="36" y="24" width="8"  height="4"  fill="rgba(0,255,0,0.4)"/>
+          <rect x="48" y="24" width="8"  height="4"  fill="rgba(0,255,0,0.3)"/>
+          <rect x="30" y="12" width="30" height="8"  fill="#007700"/>
+          <rect x="32" y="13" width="26" height="6"  fill="#005500"/>
+          <rect x="72" y="6"  width="16" height="4"  fill="#00aa00"/>
+          <rect x="82" y="6"  width="4"  height="14" fill="#00aa00"/>
+          <rect x="92" y="24" width="6"  height="8"  fill="#001800"/>
+          <rect x="94" y="25" width="4"  height="6"  fill="rgba(0,255,0,0.6)"/>
+        </g>
+
+        <!-- 바이크 3 (x=3600) -->
+        <g transform="translate(3600,-38)">
+          <rect x="0"  y="22" width="28" height="28" rx="14" fill="none" stroke="#00dd00" stroke-width="2"/>
+          <rect x="11" y="33" width="6"  height="6"  fill="#00dd00"/>
+          <rect x="13" y="22" width="2"  height="28" fill="rgba(0,255,0,0.3)"/>
+          <rect x="0"  y="35" width="28" height="2"  fill="rgba(0,255,0,0.3)"/>
+          <rect x="68" y="22" width="28" height="28" rx="14" fill="none" stroke="#00dd00" stroke-width="2"/>
+          <rect x="79" y="33" width="6"  height="6"  fill="#00dd00"/>
+          <rect x="81" y="22" width="2"  height="28" fill="rgba(0,255,0,0.3)"/>
+          <rect x="68" y="35" width="28" height="2"  fill="rgba(0,255,0,0.3)"/>
+          <rect x="14" y="32" width="68" height="6"  fill="#008800"/>
+          <rect x="28" y="18" width="36" height="20" fill="#003a00"/>
+          <rect x="30" y="20" width="32" height="16" fill="#002a00"/>
+          <rect x="34" y="22" width="24" height="12" fill="#001800"/>
+          <rect x="36" y="24" width="8"  height="4"  fill="rgba(0,255,0,0.35)"/>
+          <rect x="48" y="24" width="8"  height="4"  fill="rgba(0,255,0,0.25)"/>
+          <rect x="30" y="12" width="30" height="8"  fill="#005500"/>
+          <rect x="32" y="13" width="26" height="6"  fill="#004400"/>
+          <rect x="72" y="6"  width="16" height="4"  fill="#008800"/>
+          <rect x="82" y="6"  width="4"  height="14" fill="#008800"/>
+        </g>
+
+        <!-- ══ 네온 가로등 (레퍼런스 스타일) ══ -->
+        {[280,680,1080,1480,1880,2280,2680,3080,3480,3880,4280,4680,5080].map(x=>(
+          <g>
+            <rect x={x+2}  y="-55" width="5"  height="57" fill="#006600"/>
+            <rect x={x+2}  y="-55" width="28" height="4"  fill="#006600"/>
+            <rect x={x+26} y="-62" width="10" height="10" fill="#004400"/>
+            <rect x={x+27} y="-61" width="8"  height="8"  fill="#002800"/>
+            <rect x={x+28} y="-58" width="6"  height="5"  fill="rgba(0,255,0,0.7)"/>
+            <rect x={x+22} y="-52" width="18" height="4"  fill="rgba(0,255,0,0.5)"/>
+            <rect x={x+16} y="-50" width="30" height="3"  fill="rgba(0,255,0,0.15)"/>
           </g>
         ))}
       </svg>
@@ -208,48 +529,85 @@
     <!-- ── 중앙 고정 캐릭터 ── -->
     <div class="player-wrap" id="player-wrap">
       <svg class="player-sprite" id="player-sprite"
-           viewBox="0 0 28 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+           viewBox="0 0 32 44" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
 
-        <!-- 뒷다리 (먼저 그려서 앞다리에 가려짐) -->
-        <rect id="leg-b"  x="9"  y="22" width="5" height="10" fill="#006600"/>
-        <rect id="foot-b" x="7"  y="30" width="8" height="4"  fill="#004400"/>
+        <!-- ── 뒷다리 ── -->
+        <rect id="leg-b"  x="10" y="27" width="5" height="11" fill="#005500"/>
+        <rect id="foot-b" x="7"  y="37" width="9" height="4"  fill="#003300"/>
 
-        <!-- 뒷팔 -->
-        <rect id="arm-b"  x="6"  y="12" width="4" height="9"  fill="#006600"/>
+        <!-- ── 뒷팔 ── -->
+        <rect id="arm-b"  x="5"  y="16" width="4" height="10" fill="#111111"/>
 
-        <!-- 몸통 -->
-        <rect x="8"  y="10" width="12" height="13" fill="#00dd00"/>
-        <!-- 몸통 안쪽 (갑옷 느낌) -->
-        <rect x="9"  y="11" width="10" height="11" fill="#00aa00"/>
-        <!-- 배지/문양 -->
-        <rect x="11" y="13" width="6"  height="4"  fill="#0a1a0a"/>
-        <rect x="12" y="14" width="4"  height="2"  fill="#00ff00"/>
+        <!-- ── 몸통 ── -->
+        <rect x="8"  y="14" width="14" height="14" fill="#111111"/>
+        <!-- 네온 테두리 -->
+        <rect x="8"  y="14" width="14" height="1"  fill="#00dd00"/>
+        <rect x="8"  y="27" width="14" height="1"  fill="#00dd00"/>
+        <rect x="8"  y="14" width="1"  height="14" fill="#00dd00"/>
+        <!-- 노트북 화면 (측면, 앞쪽에 살짝 보임) -->
+        <rect x="9"  y="16" width="9"  height="7"  fill="#001800"/>
+        <rect x="9"  y="16" width="9"  height="1"  fill="#009900"/>
+        <!-- 코드 라인 3줄 -->
+        <rect x="10" y="18" width="5"  height="1"  fill="#00ff00" opacity="0.85"/>
+        <rect x="10" y="20" width="7"  height="1"  fill="#00ff00" opacity="0.65"/>
+        <rect x="11" y="22" width="4"  height="1"  fill="#00ff00" opacity="0.5"/>
 
-        <!-- 머리: 오른쪽 방향으로 향함 -->
+        <!-- ── 고양이 귀 (오른쪽방향 측면) ── -->
+        <rect x="11" y="0"  width="3"  height="4"  fill="#00ff00"/>
+        <rect x="12" y="1"  width="2"  height="2"  fill="#003300"/>
+        <rect x="21" y="0"  width="3"  height="4"  fill="#00ff00"/>
+        <rect x="22" y="1"  width="2"  height="2"  fill="#003300"/>
+
+        <!-- ── 헤드폰 밴드 ── -->
+        <rect x="11" y="4"  width="13" height="2"  fill="#00bb00"/>
+        <!-- 헤드폰 컵 (뒤쪽 컵, 측면) -->
+        <rect x="8"  y="6"  width="4"  height="7"  fill="#00aa00"/>
+        <rect x="9"  y="7"  width="3"  height="5"  fill="#001a00"/>
+        <rect x="10" y="8"  width="1"  height="3"  fill="#002800"/>
+
+        <!-- ── 머리 (뒷통수~앞면) ── -->
         <!-- 뒷통수 -->
-        <rect x="8"  y="1"  width="4"  height="9"  fill="#00cc00"/>
+        <rect x="8"  y="3"  width="5"  height="12" fill="#00cc00"/>
         <!-- 머리 메인 -->
-        <rect x="10" y="0"  width="12" height="10" fill="#00ff00"/>
-        <!-- 얼굴 안쪽 -->
-        <rect x="11" y="1"  width="10" height="8"  fill="#0a1a0a"/>
-        <!-- 눈 (오른쪽 방향) -->
-        <rect x="19" y="3"  width="2"  height="2"  fill="#00ff00"/>
-        <!-- 눈빛 -->
-        <rect x="20" y="3"  width="1"  height="1"  fill="#ffffff"/>
-        <!-- 입 -->
-        <rect x="19" y="6"  width="3"  height="1"  fill="#00cc00"/>
-        <!-- 코 -->
-        <rect x="21" y="4"  width="2"  height="2"  fill="#00aa00"/>
-        <!-- 헬멧 바이저 -->
-        <rect x="10" y="0"  width="12" height="3"  fill="#00cc00"/>
-        <rect x="18" y="2"  width="4"  height="2"  fill="#00ff00"/>
+        <rect x="11" y="2"  width="14" height="13" fill="#00ff00"/>
+        <!-- 얼굴 (어두운 배경) -->
+        <rect x="12" y="3"  width="12" height="11" fill="#002800"/>
+        <!-- 머리카락 위 -->
+        <rect x="11" y="2"  width="14" height="4"  fill="#003300"/>
+        <rect x="12" y="3"  width="12" height="3"  fill="#004400"/>
 
-        <!-- 앞팔 -->
-        <rect id="arm-f"  x="18" y="12" width="4" height="9"  fill="#00ee00"/>
+        <!-- ── 안경 (측면) ── -->
+        <!-- 프레임 -->
+        <rect x="21" y="6"  width="5"  height="5"  fill="#001400"/>
+        <rect x="21" y="6"  width="5"  height="1"  fill="#00ff00"/>
+        <rect x="21" y="10" width="5"  height="1"  fill="#00ff00"/>
+        <rect x="21" y="6"  width="1"  height="5"  fill="#00ff00"/>
+        <rect x="25" y="6"  width="1"  height="5"  fill="#00ff00"/>
+        <!-- 렌즈 반사 -->
+        <rect x="22" y="7"  width="2"  height="2"  fill="#00ff00" opacity="0.5"/>
+        <!-- 안경다리 (뒤로 연결) -->
+        <rect x="13" y="7"  width="8"  height="1"  fill="#00cc00"/>
 
-        <!-- 앞다리 -->
-        <rect id="leg-f"  x="11" y="22" width="5" height="10" fill="#00cc00"/>
-        <rect id="foot-f" x="11" y="30" width="8" height="4"  fill="#009900"/>
+        <!-- ── 눈 ── -->
+        <rect x="22" y="8"  width="3"  height="2"  fill="#00ff00"/>
+        <rect x="23" y="8"  width="1"  height="1"  fill="#003300"/>
+
+        <!-- ── 코 ── -->
+        <rect x="24" y="9"  width="2"  height="2"  fill="#00bb00"/>
+
+        <!-- ── 입 (미소) ── -->
+        <rect x="22" y="11" width="4"  height="1"  fill="#00aa00"/>
+        <rect x="21" y="10" width="2"  height="1"  fill="#00bb00"/>
+
+        <!-- ── 앞팔 ── -->
+        <rect id="arm-f"  x="20" y="16" width="4" height="10" fill="#111111"/>
+        <!-- 손 -->
+        <rect x="19" y="25" width="6"  height="3"  fill="#00cc00"/>
+
+        <!-- ── 앞다리 ── -->
+        <rect id="leg-f"  x="13" y="27" width="5" height="11" fill="#00cc00"/>
+        <rect id="foot-f" x="13" y="37" width="9" height="4"  fill="#009900"/>
+
       </svg>
 
       <!-- 그림자 (SVG 아래) -->
@@ -290,7 +648,7 @@
     color: rgba(0,255,0,0.5);
     letter-spacing: 0.2em;
     animation: blink-slow 1.5s step-end infinite;
-  ">// WORLD LOADING...</div>
+  ">// WORLD 1-1 LOADING...</div>
   <div style="
     font-family: 'Press Start 2P', monospace;
     font-size: 1.1rem;
@@ -299,7 +657,7 @@
     letter-spacing: 0.12em;
     text-align: center;
     line-height: 2.2;
-  ">DREAM_HERO<br/>ENTERED THE WORLD</div>
+  ">PLAYER_ONE<br/>ENTERED THE WORLD</div>
   <div style="
     font-family: 'Share Tech Mono', monospace;
     font-size: 1rem;
@@ -745,9 +1103,9 @@
     top: 0;
     height: 100vh;
     overflow: hidden;
-    background: #050d05;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    background: #000500;
+    border-top: 2px solid #00ff00;
+    border-bottom: 2px solid #00ff00;
   }
 
   /* ── 공통 레이어 ── */
@@ -863,14 +1221,12 @@
     /* bottom=22% = 바닥선
        sprite height=192, 발 y=34/40*192=163px, 여백=29px
        margin-bottom:-29px → wrap이 바닥선 아래 29px까지 확장 → 발=바닥선 */
-    bottom: 22%;
+    bottom: calc(22% - 13px);   /* 발 하단 y=41/44*192=179px → SVG 하단 여백 13px 보정 */
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
-    /* shadow를 absolute로 분리하므로 wrap = sprite만 */
     width: 144px;
     height: 192px;
-    margin-bottom: -29px;
   }
   .player-sprite {
     width: 144px;
@@ -924,6 +1280,22 @@
   @keyframes speedline {
     from { transform: translateX(0);    opacity: 1; }
     to   { transform: translateX(-10px); opacity: 0; }
+  }
+
+  /* CRT 스캔라인 오버레이 */
+  .scroller-sticky::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.18) 3px,
+      rgba(0,0,0,0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
   }
 
   /* HUD */
@@ -1461,9 +1833,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // idle 기준값 (새 SVG viewBox 28x40 기준)
   const BASE = {
-    legF:  { x:11, y:22 }, legB:  { x:9,  y:22 },
-    footF: { x:11, y:30 }, footB: { x:7,  y:30 },
-    armF:  { x:18, y:12 }, armB:  { x:6,  y:12 },
+    legF:  { x:13, y:27 }, legB:  { x:10, y:27 },
+    footF: { x:13, y:37 }, footB: { x:7,  y:37 },
+    armF:  { x:20, y:16 }, armB:  { x:5,  y:16 },
   };
 
   let walkFrame   = 0;
@@ -1634,39 +2006,45 @@ document.addEventListener('DOMContentLoaded', () => {
   let   introHidden   = false;
   let   endingShown   = false;
 
-  // IntersectionObserver로 드라이버 가시성 감지
-  const introObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !introHidden) {
-        // 드라이버가 보이기 시작하면 즉시 intro 표시
-        introOverlay.style.display = 'flex';
-        gsap.set(introOverlay, { opacity: 0 });
-        gsap.to(introOverlay, { opacity: 1, duration: 0.5 });
-        gsap.fromTo(Array.from(introOverlay.children),
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, stagger: 0.18, duration: 0.6, ease: 'power2.out' }
-        );
-      }
-    });
-  }, { threshold: 0.05 });
-  introObserver.observe(driver);
-
-  // driver sticky 진입(스크롤 시작) 시 intro 숨김
+  // driver가 화면에 들어올 때(아래로 스크롤) → intro 표시
+  // driver sticky 진입 시 → intro 숨김
+  // driver가 화면에서 완전히 벗어날 때(위로) → intro 즉시 숨김
   ScrollTrigger.create({
     trigger: driver,
-    start: 'top top',
+    start: 'top bottom',   // driver 상단이 뷰포트 하단에 닿는 순간
+    end: 'top top',        // driver 상단이 뷰포트 상단에 닿는 순간
     onEnter: () => {
+      // 아래로 스크롤: driver 진입 → intro 표시
+      if (!introHidden) {
+        introOverlay.style.display = 'flex';
+        gsap.set(introOverlay, { opacity: 0 });
+        gsap.to(introOverlay, { opacity: 1, duration: 0.4 });
+        gsap.fromTo(Array.from(introOverlay.children),
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, stagger: 0.15, duration: 0.5, ease: 'power2.out' }
+        );
+      }
+    },
+    onLeave: () => {
+      // 아래로 스크롤: driver sticky 진입 → intro 숨김
       introHidden = true;
       gsap.to(introOverlay, {
-        opacity: 0, duration: 0.4,
+        opacity: 0, duration: 0.35,
         onComplete: () => { introOverlay.style.display = 'none'; }
       });
     },
-    onLeaveBack: () => {
-      // 스크롤 되돌아오면 다시 보여줌
+    onEnterBack: () => {
+      // 위로 스크롤: sticky 벗어남 → intro 다시 표시
       introHidden = false;
       introOverlay.style.display = 'flex';
       gsap.set(introOverlay, { opacity: 1 });
+    },
+    onLeaveBack: () => {
+      // 위로 스크롤: driver 완전히 위로 벗어남 → 즉시 숨김
+      introHidden = false;
+      gsap.killTweensOf(introOverlay);
+      introOverlay.style.display = 'none';
+      gsap.set(introOverlay, { opacity: 0 });
     }
   });
 
@@ -1771,7 +2149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.set('#ec-label,#ec-title,#ec-sub,#ec-arrow', { clearProps: 'all' });
   }
 
-  // 메인 ScrollTrigger onUpdate에 progress 감지 추가
+  // progress 기반 엔딩 감지
   ScrollTrigger.create({
     trigger: driver,
     start: 'top top',
@@ -1782,6 +2160,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (self.progress < 0.88 && endingShown) {
         resetEnding();
+      }
+    },
+    onLeave: () => {
+      // driver 끝을 지나 아래로 완전히 나가면 엔딩 오버레이 숨김
+      // (Contact 등 다음 섹션이 보이게)
+      gsap.to(endingOverlay, {
+        opacity: 0, duration: 0.5,
+        onComplete: () => {
+          endingOverlay.style.display = 'none';
+          endingCanvas.style.display  = 'none';
+        }
+      });
+    },
+    onEnterBack: () => {
+      // 다시 driver 안으로 돌아오면 엔딩 재표시
+      if (endingShown) {
+        endingOverlay.style.display = 'flex';
+        gsap.to(endingOverlay, { opacity: 1, duration: 0.4 });
       }
     }
   });

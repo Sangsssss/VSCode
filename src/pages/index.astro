@@ -13,11 +13,41 @@ import SideScroller from '../components/SideScroller.astro';
 
   <!-- ── CONTACT ────────────────────────────────────────── -->
   <section id="contact" class="section">
-    <h2 class="section-title gsap-fade-in"><span class="neon-text">04.</span> CONTACT</h2>
-    <p class="contact-lead gsap-fade-in">새로운 모험을 함께할 팀원을 찾고 있습니다.</p>
-    <a href="mailto:hello@playeron.dev" class="btn-primary gsap-fade-in" data-hover>
-      ✉ SEND MESSAGE
-    </a>
+    <h2 class="section-title gsap-fade-in"><span class="neon-text">02.</span> CONTACT</h2>
+    <p class="contact-lead gsap-fade-in">새로운 모험을 함께할 팀원을 찾고 있습니다.<br/>언제든지 메시지를 보내주세요.</p>
+
+    <div class="contact-grid gsap-fade-in">
+      <!-- 이메일 주소 표시 -->
+      <div class="contact-info">
+        <p class="contact-label">// EMAIL</p>
+        <a href="mailto:your@email.com" class="contact-email">dltkddnjsas@gmail.com</a>
+      </div>
+
+      <!-- 메시지 폼 -->
+      <div class="contact-form-wrap">
+        <p class="contact-label">// SEND_MESSAGE()</p>
+        <div class="contact-form">
+          <div class="form-field">
+            <label class="form-label">NAME_</label>
+            <input type="text" id="cf-name" class="form-input" placeholder="PLAYER_ONE"/>
+          </div>
+          <div class="form-field">
+            <label class="form-label">EMAIL_</label>
+            <input type="email" id="cf-email" class="form-input" placeholder="your@email.com"/>
+          </div>
+          <div class="form-field">
+            <label class="form-label">MESSAGE_</label>
+            <textarea id="cf-msg" class="form-input form-textarea" placeholder="HELLO WORLD..."></textarea>
+          </div>
+          <button id="cf-submit" class="btn-primary contact-btn" data-hover>
+            <span class="btn-icon">✉</span>
+            <span id="cf-label">SEND MESSAGE</span>
+            <span class="btn-blink">█</span>
+          </button>
+          <p id="cf-status" class="cf-status"></p>
+        </div>
+      </div>
+    </div>
   </section>
 
 </Layout>
@@ -190,40 +220,187 @@ import SideScroller from '../components/SideScroller.astro';
   .skill-pct { font-family: var(--font-mono); font-size: 0.75rem; text-align: right; }
 
   /* Contact */
-  .contact-lead {
+   .contact-lead {
     font-size: 1rem;
     color: var(--text-muted);
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
     line-height: 1.8;
   }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .contact-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  .contact-info {
+    padding-top: 0.5rem;
+  }
+  .contact-email {
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    color: var(--neon);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(0,255,0,0.3);
+    padding-bottom: 0.3rem;
+    transition: color 0.2s, box-shadow 0.2s;
+    display: inline-block;
+  }
+  .contact-email:hover {
+    color: #33ff33;
+    text-shadow: 0 0 10px rgba(0,255,0,0.6);
+  }
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .form-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+  }
+  .form-input {
+    background: rgba(0,255,0,0.04);
+    border: 1px solid rgba(0,255,0,0.25);
+    color: var(--neon);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: var(--neon);
+  }
+  .form-input::placeholder {
+    color: rgba(0,255,0,0.2);
+  }
+  .form-input:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 12px rgba(0,255,0,0.2);
+  }
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .contact-btn {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+  }
+  .btn-blink {
+    animation: blink 1s step-end infinite;
+    font-size: 0.8rem;
+  }
+  .btn-icon { font-size: 0.9rem; }
+  .cf-status {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    min-height: 1.2rem;
+    letter-spacing: 0.05em;
+  }
+  .cf-status.ok  { color: var(--neon); }
+  .cf-status.err { color: #ff4444; }
 
   @media (max-width: 768px) {
-    .about-grid  { grid-template-columns: 1fr; }
-    .skill-row   { grid-template-columns: 120px 1fr 40px; }
+    .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   }
 </style>
 
-<!-- ── Skill bar GSAP animation ──────────────────────────── -->
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
-    // Animate skill bars when section enters viewport
-    document.querySelectorAll('.skill-bar').forEach(bar => {
-      const pct = bar.dataset.pct + '%';
-      ScrollTrigger.create({
-        trigger: bar,
-        start: 'top 85%',
-        onEnter: () => gsap.to(bar, { width: pct, duration: 1.2, ease: 'power2.out' })
-      });
+    gsap.from('.hero-title .line1, .hero-title .line2', {
+      opacity: 0, y: 40, duration: 0.9,
+      stagger: 0.2, ease: 'power3.out', delay: 0.4,
     });
 
-    // Hero title stagger
-    gsap.from('.hero-title .line1, .hero-title .line2', {
-      opacity: 0,
-      y: 40,
-      duration: 0.9,
-      stagger: 0.2,
-      ease: 'power3.out',
-      delay: 0.4,
+    // ── Contact Form (EmailJS SDK 동적 로드) ─────────────────
+    const SERVICE_ID  = 'service_q8ece0f';
+    const TEMPLATE_ID = 'template_afg6d69';
+    const PUBLIC_KEY  = 'srjHslGd-PYq7iY_5';
+
+    const btn    = document.getElementById('cf-submit');
+    const label  = document.getElementById('cf-label');
+    const status = document.getElementById('cf-status');
+
+    // EmailJS SDK를 동적으로 로드 후 초기화
+    const ejsScript = document.createElement('script');
+    ejsScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    ejsScript.onload = () => {
+      emailjs.init(PUBLIC_KEY);
+      console.log('[EmailJS] ready');
+    };
+    document.head.appendChild(ejsScript);
+
+    btn?.addEventListener('click', async () => {
+      const name  = document.getElementById('cf-name').value.trim();
+      const email = document.getElementById('cf-email').value.trim();
+      const msg   = document.getElementById('cf-msg').value.trim();
+
+      if (!name || !email || !msg) {
+        status.textContent = '> ERROR: 모든 필드를 입력해주세요.';
+        status.className = 'cf-status err';
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        status.textContent = '> ERROR: 올바른 이메일 형식이 아닙니다.';
+        status.className = 'cf-status err';
+        return;
+      }
+      if (typeof emailjs === 'undefined') {
+        status.textContent = '> ERROR: 잠시 후 다시 시도해주세요.';
+        status.className = 'cf-status err';
+        return;
+      }
+
+      btn.disabled = true;
+      label.textContent = 'SENDING...';
+      status.textContent = '';
+
+      try {
+        const result = await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+          from_name : name,
+          reply_to  : email,
+          message   : msg,
+        });
+
+        console.log('[EmailJS] success', result);
+        label.textContent = 'SEND MESSAGE';
+        status.textContent = '> TRANSMISSION COMPLETE ✓ 메시지가 전송됐습니다!';
+        status.className = 'cf-status ok';
+        document.getElementById('cf-name').value  = '';
+        document.getElementById('cf-email').value = '';
+        document.getElementById('cf-msg').value   = '';
+
+      } catch (err) {
+        console.error('[EmailJS] error', err);
+        label.textContent = 'SEND MESSAGE';
+        status.textContent = '> ERROR: ' + (err?.text || err?.message || JSON.stringify(err));
+        status.className = 'cf-status err';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('cf-msg')?.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.key === 'Enter') btn?.click();
     });
   });
+
 </script>
